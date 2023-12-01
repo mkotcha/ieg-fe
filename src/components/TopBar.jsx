@@ -1,7 +1,25 @@
 import { Col, Container, Nav, Navbar, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { unsetTokenAction } from "../redux/actions";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const TopBar = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(unsetTokenAction());
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <div className="bg-body-tertiary">
       <Container fluid>
@@ -18,11 +36,19 @@ const TopBar = () => {
                     <NavLink to={"/"} className="nav-link">
                       Home
                     </NavLink>
-                    <NavLink to={"/login"} className="nav-link">
-                      Login
-                    </NavLink>
                   </Nav>
                 </Navbar.Collapse>
+              </div>
+              <div className="ms-auto">
+                {isAuthenticated ? (
+                  <NavLink onClick={handleLogout} className="text-decoration-none text-white">
+                    Logout
+                  </NavLink>
+                ) : (
+                  <NavLink to={"/login"} className="text-decoration-none text-white">
+                    Login
+                  </NavLink>
+                )}
               </div>
             </Navbar>
           </Col>
