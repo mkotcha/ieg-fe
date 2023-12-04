@@ -1,9 +1,13 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from "../redux/actions";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -12,6 +16,12 @@ const Login = () => {
     const password = form.formPassword.value;
     dispatch(loginAction(username, password));
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="h-100 mt-5">

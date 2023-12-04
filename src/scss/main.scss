@@ -1,10 +1,13 @@
-@import "bootstrap/scss/bootstrap";
-
-body {
-  //   max-width: 100%;
-  // min-height: 100vh;
-}
+// @import "bootstrap/scss/bootstrap";
+@import "./overrides";
 
 #root {
   min-height: 100vh;
+}
+
+#add-clienti {
+  z-index: 1000;
+  position: absolute;
+  bottom: 70px;
+  right: 30px;
 }

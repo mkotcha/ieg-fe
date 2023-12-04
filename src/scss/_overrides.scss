@@ -1,0 +1,69 @@
+@import "bootstrap/scss/functions";
+
+// Include any default variable overrides here
+
+// $primary: #2169d4;
+// $secondary: #135bc7;
+
+// $body-bg: #6995f3;
+
+// $body-tertiary-bg: #2047b4;
+// $tertiary-color: white;
+
+// $body-secondary-bg: #90e0ef;
+
+// Source mixin
+
+// Usage
+
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+
+//merge
+
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// utilities-merge
+
+// $utilities: map-merge(
+//   $utilities,
+//   (
+//     "color":
+//       map-merge(
+//         map-get($utilities, "color"),
+//         (
+//           values: map-merge(map-get(map-get($utilities, "color"), "values"), ($custom-colors)),
+//         )
+//       ),
+//   )
+// );
+
+// $utilities: map-merge(
+//   $utilities,
+//   (
+//     "background-color":
+//       map-merge(
+//         map-get($utilities, "background-color"),
+//         (
+//           values: map-merge(map-get(map-get($utilities, "background-color"), "values"), ($custom-colors)),
+//         )
+//       ),
+//   )
+// );
+
+// $utilities: map-merge(
+//   $utilities,
+//   (
+//     "text-color":
+//       map-merge(
+//         map-get($utilities, "text-color"),
+//         (
+//           values: map-merge(map-get(map-get($utilities, "text-color"), "values"), ($custom-colors)),
+//         )
+//       ),
+//   )
+// );
+
+@import "bootstrap/scss/bootstrap";
