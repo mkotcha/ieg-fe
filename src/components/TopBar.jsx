@@ -30,6 +30,12 @@ const TopBar = () => {
                     <NavLink to={"/clienti"} className="nav-link">
                       Clienti
                     </NavLink>
+                    <NavLink to={"/forniture"} className="nav-link">
+                      Forniture
+                    </NavLink>
+                    <NavLink to={"/letture"} className="nav-link">
+                      Letture
+                    </NavLink>
                   </Nav>
                 </Navbar.Collapse>
               </div>

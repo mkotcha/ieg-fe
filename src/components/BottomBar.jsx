@@ -1,6 +1,6 @@
 const BottomBar = () => {
   return (
-    <div className=" bg-body-tertiary text-center text-lg-start w-100">
+    <div className=" bg-body-tertiary text-center text-lg-start w-100 mt-3">
       <div className="text-center p-3 text-reset">
         © 2023 by{" "}
         <a

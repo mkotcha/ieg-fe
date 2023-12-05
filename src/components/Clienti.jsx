@@ -10,7 +10,7 @@ const Clienti = () => {
   const token = useSelector(state => state.auth.token);
   const [showModal, setShowModal] = useState(false);
   const [rowData, setRowData] = useState([]);
-  const [colDefs, setColDefs] = useState([
+  const [colDefs] = useState([
     { field: "ragioneSociale", flex: 4 },
     { field: "piva", flex: 2 },
     { field: "cf", flex: 2 },
@@ -37,11 +37,13 @@ const Clienti = () => {
 
   return (
     <>
-      <Container fluid className="h-100 content">
-        <h1>Clienti</h1>
-        <div className="ag-theme-quartz-dark" style={{ height: 750 }}>
-          {/* The AG Grid component */}
-          <AgGridReact rowData={rowData} rowHeight={32} columnDefs={colDefs} />
+      <Container fluid className="flex-grow-1">
+        <div className="d-flex flex-column  h-100">
+          <h1>Clienti</h1>
+          <div className="ag-theme-quartz-dark flex-grow-1">
+            {/* The AG Grid component */}
+            <AgGridReact rowData={rowData} columnDefs={colDefs} autoHeight={true} />
+          </div>
         </div>
       </Container>
       <div id="add-clienti">
