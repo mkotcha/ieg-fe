@@ -2,17 +2,33 @@ import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css"; // Core CSS
+import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
 
 const Clienti = () => {
   const token = useSelector(state => state.auth.token);
   const [showModal, setShowModal] = useState(false);
+  const [rowData, setRowData] = useState([]);
+  const [colDefs, setColDefs] = useState([
+    { field: "ragioneSociale", flex: 4 },
+    { field: "piva", flex: 2 },
+    { field: "cf", flex: 2 },
+    { field: "indirizzo", flex: 3 },
+    { field: "cap", flex: 1 },
+    { field: "provincia", flex: 1 },
+    { field: "comune", flex: 2 },
+    { field: "telefono", flex: 1 },
+    { field: "email", flex: 1 },
+  ]);
 
   const fetchClienti = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti`;
+    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(response.data);
+    setRowData(response.data.content);
+    console.log(response.data.content);
   };
 
   useState(() => {
@@ -21,9 +37,12 @@ const Clienti = () => {
 
   return (
     <>
-      <Container fluid>
+      <Container fluid className="h-100 content">
         <h1>Clienti</h1>
-        <p>Qui ci saranno i clienti</p>
+        <div className="ag-theme-quartz-dark" style={{ height: 750 }}>
+          {/* The AG Grid component */}
+          <AgGridReact rowData={rowData} rowHeight={32} columnDefs={colDefs} />
+        </div>
       </Container>
       <div id="add-clienti">
         <Button onClick={() => setShowModal(true)} variant="primary" className="rounded-pill ">
