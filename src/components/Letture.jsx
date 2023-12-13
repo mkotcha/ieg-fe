@@ -9,12 +9,27 @@ const Letture = () => {
   const [showModal, setShowModal] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
-    { field: "fornitura.pod", headerName: "POD", flex: 4 },
-    { field: "dataLettura", headerName: "data", flex: 3 },
+    { field: "fornitura.id", headerName: "POD" },
+    { field: "dataLettura", headerName: "data" },
+    { field: "tipoContatore", headerName: "Trattamento", width: 80 },
+    { field: "raccolta", headerName: "Raccolta", width: 80 },
+    { field: "tipoDato", headerName: "Tipo dato", width: 80 },
+    { field: "validato", headerName: "Validato", width: 80 },
+    { field: "potMax", headerName: "PotMax", type: "numericColumn" },
+    { field: "eaF1", headerName: "EaF1", type: "numericColumn" },
+    { field: "eaF2", headerName: "EaF2", type: "numericColumn" },
+    { field: "eaF3", headerName: "EaF3", type: "numericColumn" },
+    { field: "erF1", headerName: "ErF1", type: "numericColumn" },
+    { field: "erF2", headerName: "ErF2", type: "numericColumn" },
+    { field: "erF3", headerName: "ErF3", type: "numericColumn" },
+    { field: "potF1", headerName: "PotF1", type: "numericColumn" },
+    { field: "potF2", headerName: "PotF2", type: "numericColumn" },
+    { field: "potF3", headerName: "PotF3", type: "numericColumn" },
+    { field: "note", headerName: "Note" },
   ]);
 
   const fetchLetture = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=50`;
+    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=50&sort=dataLettura,desc`;
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
