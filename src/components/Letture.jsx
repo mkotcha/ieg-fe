@@ -3,18 +3,20 @@ import axios from "axios";
 import { useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import LetturaPod from "./cellComponents/LetturaPod";
 
 const Letture = () => {
   const token = useSelector(state => state.auth.token);
   const [showModal, setShowModal] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
-    { field: "fornitura.id", headerName: "POD" },
+    { field: "fornitura.id", headerName: "test", cellRenderer: LetturaPod },
+    { field: "fornitura.id", headerName: "POD", filter: true },
     { field: "dataLettura", headerName: "data" },
-    { field: "tipoContatore", headerName: "Trattamento", width: 80 },
-    { field: "raccolta", headerName: "Raccolta", width: 80 },
-    { field: "tipoDato", headerName: "Tipo dato", width: 80 },
-    { field: "validato", headerName: "Validato", width: 80 },
+    { field: "tipoContatore", headerName: "Trattamento" },
+    { field: "raccolta", headerName: "Raccolta" },
+    { field: "tipoDato", headerName: "Tipo dato" },
+    { field: "validato", headerName: "Validato" },
     { field: "potMax", headerName: "PotMax", type: "numericColumn" },
     { field: "eaF1", headerName: "EaF1", type: "numericColumn" },
     { field: "eaF2", headerName: "EaF2", type: "numericColumn" },
@@ -27,14 +29,16 @@ const Letture = () => {
     { field: "potF3", headerName: "PotF3", type: "numericColumn" },
     { field: "note", headerName: "Note" },
   ]);
+  const autoSizeStrategy = {
+    type: "fitCellContents",
+  };
 
   const fetchLetture = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=50&sort=dataLettura,desc`;
+    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=10000&sort=dataLettura,desc`;
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setRowData(response.data.content);
-    console.log(response.data.content);
   };
 
   const handleUpload = async () => {
@@ -74,7 +78,16 @@ const Letture = () => {
           </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
-            <AgGridReact rowData={rowData} columnDefs={colDefs} autoHeight={true} />
+            <AgGridReact
+              autoSizeStrategy={autoSizeStrategy}
+              suppressColumnVirtualisation={true}
+              rowData={rowData}
+              columnDefs={colDefs}
+              autoHeight={true}
+              pagination={true}
+              enableCellTextSelection={true}
+              ensureDomOrder={true}
+            />
           </div>
         </div>
       </Container>
