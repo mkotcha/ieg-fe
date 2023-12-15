@@ -5,9 +5,17 @@ export const UNSET_TOKEN = "UNSET_TOKEN";
 export const SET_USER = "SET_USER";
 export const SET_LOADING = "SET_LOADING";
 export const SET_ERROR = "SET_ERROR";
+export const SHOW_UPLOAD_MODAL = "SHOW_UPLOAD_MODAL";
+export const HIDE_UPLOAD_MODAL = "HIDE_UPLOAD_MODAL";
+export const SHOW_ADD_LETTURA_MODAL = "SHOW_ADD_LETTURA_MODAL";
+export const HIDE_ADD_LETTURA_MODAL = "HIDE_ADD_LETTURA_MODAL";
 
 export const setTokenAction = token => ({ type: SET_TOKEN, payload: token });
 export const unsetTokenAction = () => ({ type: UNSET_TOKEN });
+export const showUploadModalAction = () => ({ type: SHOW_UPLOAD_MODAL });
+export const hideUploadModalAction = () => ({ type: HIDE_UPLOAD_MODAL });
+export const showAddLetturaModalAction = () => ({ type: SHOW_ADD_LETTURA_MODAL });
+export const hideAddLetturaModalAction = () => ({ type: HIDE_ADD_LETTURA_MODAL });
 
 export const loginAction = (username, password) => {
   return async dispatch => {
