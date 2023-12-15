@@ -3,8 +3,6 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css"; // Core CSS
-import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
 
 const Clienti = () => {
   const token = useSelector(state => state.auth.token);
@@ -28,7 +26,6 @@ const Clienti = () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     setRowData(response.data.content);
-    console.log(response.data.content);
   };
 
   useState(() => {

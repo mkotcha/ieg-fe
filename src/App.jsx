@@ -8,6 +8,9 @@ import Forniture from "./components/Forniture";
 import { Routes } from "react-router-dom";
 import { Route } from "react-router-dom";
 import Letture from "./components/Letture";
+import AddLetturaModal from "./components/modals/AddLetturaModal";
+import UploadFlussiModal from "./components/modals/UploadFlussiModal";
+import DeleteLetturaModal from "./components/modals/DeleteLetturaModal";
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
         <Route path="/letture" element={<Letture />} />
       </Routes>
       <BottomBar />
+      <UploadFlussiModal />
+      <AddLetturaModal />
+      <DeleteLetturaModal />
     </BrowserRouter>
   );
 }

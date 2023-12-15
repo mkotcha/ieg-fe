@@ -1,5 +1,7 @@
-// @import "bootstrap/scss/bootstrap";
+@use "ag-grid-community/styles" as ag;
 @import "./overrides";
+
+@include ag.grid-styles();
 
 body {
   height: 100vh;
@@ -34,7 +36,6 @@ body {
   --ag-header-background-color: rgb(33, 37, 41);
   --ag-odd-row-background-color: rgb(33, 37, 41);
   --ag-header-column-resize-handle-color: rgb(50, 50, 52);
-
-  --ag-font-size: 16px;
-  // --ag-font-family: monospace;
+  --ag-font-size: 15px;
+  --ag-grid-size: 6px;
 }
