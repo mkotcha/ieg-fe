@@ -10,6 +10,7 @@ import { Route } from "react-router-dom";
 import Letture from "./components/Letture";
 import AddLetturaModal from "./components/modals/AddLetturaModal";
 import UploadFlussiModal from "./components/modals/UploadFlussiModal";
+import DeleteLetturaModal from "./components/modals/DeleteLetturaModal";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <BottomBar />
       <UploadFlussiModal />
       <AddLetturaModal />
+      <DeleteLetturaModal />
     </BrowserRouter>
   );
 }

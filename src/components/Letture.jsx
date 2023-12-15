@@ -5,9 +5,12 @@ import { Button, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import LetturaPod from "./cellComponents/LetturaPod";
 import { showAddLetturaModalAction, showUploadModalAction } from "../redux/actions";
+import { useEffect } from "react";
 
 const Letture = () => {
   const token = useSelector(state => state.auth.token);
+  const showAddLetturaModal = useSelector(state => state.modal.showAddLetturaModal);
+  const showDeleteLetturaModal = useSelector(state => state.modal.showDeleteLetturaModal);
   const dispatch = useDispatch();
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
@@ -33,17 +36,17 @@ const Letture = () => {
     type: "fitCellContents",
   };
 
-  const fetchLetture = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=10000&sort=dataLettura,desc`;
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setRowData(response.data.content);
-  };
+  useEffect(() => {
+    const fetchLetture = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=10000&sort=dataLettura,desc`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRowData(response.data.content);
+    };
 
-  useState(() => {
-    fetchLetture();
-  }, []);
+    if (!showAddLetturaModal || !showDeleteLetturaModal) fetchLetture();
+  }, [showAddLetturaModal, showDeleteLetturaModal, token]);
 
   return (
     <>

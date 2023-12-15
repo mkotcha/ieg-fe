@@ -7,6 +7,7 @@ import axios from "axios";
 
 const AddLetturaModal = () => {
   const showAddModal = useSelector(state => state.modal.showAddLetturaModal);
+  const modLetturaId = useSelector(state => state.modal.modLetturaId);
   const token = useSelector(state => state.auth.token);
   const [listaPod, setListaPod] = useState(null);
   const [lettura, setLettura] = useState({
@@ -16,10 +17,41 @@ const AddLetturaModal = () => {
     tipoDato: "R",
     raccolta: "P",
     validato: "S",
+    eaF1: 0,
+    eaF2: 0,
+    eaF3: 0,
+    erF1: 0,
+    erF2: 0,
+    erF3: 0,
+    potF1: 0,
+    potF2: 0,
+    potF3: 0,
   });
   const dispatch = useDispatch();
 
-  const handlePost = async () => {};
+  const handlePost = async event => {
+    event.preventDefault();
+    const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/letture/`;
+    if (modLetturaId) {
+      const url = urlApi + modLetturaId;
+      const response = await axios.put(url, lettura, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response);
+      if (response.status === 200) {
+        dispatch(hideAddLetturaModalAction());
+      }
+    } else {
+      const url = urlApi;
+      const response = await axios.post(url, lettura, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response);
+      if (response.status === 201) {
+        dispatch(hideAddLetturaModalAction());
+      }
+    }
+  };
 
   const handleChange = event => {
     const id = event.target.id;
@@ -41,23 +73,60 @@ const AddLetturaModal = () => {
     }
   };
 
+  const resetLettura = () => {
+    console.log("reset");
+    setLettura({
+      id: null,
+      dataLettura: "",
+      tipoLettura: "AUTOLETTURA",
+      tipoContatore: "ORARIO",
+      tipoDato: "R",
+      raccolta: "P",
+      validato: "S",
+      eaF1: 0,
+      eaF2: 0,
+      eaF3: 0,
+      erF1: 0,
+      erF2: 0,
+      erF3: 0,
+      potF1: 0,
+      potF2: 0,
+      potF3: 0,
+      note: "",
+    });
+  };
+
   useEffect(() => {
     console.log(lettura);
   }, [lettura]);
 
   useEffect(() => {
-    async function fetchListaPod() {
+    const fetchListaPod = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture/listapod`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setListaPod(response.data);
       setLettura({ ...lettura, pod: response.data[0] });
-    }
-    if (showAddModal && !listaPod) {
+    };
+    const fetchLettura = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture/` + modLetturaId;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLettura(response.data);
+    };
+
+    if (showAddModal && !listaPod && !modLetturaId) {
       fetchListaPod();
+    } else if (showAddModal && modLetturaId && !lettura.id) {
+      fetchLettura();
     }
-  }, [lettura, listaPod, showAddModal, token]);
+
+    if (!showAddModal && lettura.id) {
+      resetLettura();
+    }
+  }, [lettura, listaPod, modLetturaId, showAddModal, token]);
 
   return (
     <Modal
@@ -66,22 +135,25 @@ const AddLetturaModal = () => {
       onHide={() => dispatch(hideAddLetturaModalAction())}
       aria-labelledby="add-modal-sizes-title-lg">
       <Modal.Header closeButton>
-        <Modal.Title id="add-modal-sizes-title-lg">Aggiungi lettura</Modal.Title>
+        <Modal.Title id="add-modal-sizes-title-lg">
+          {modLetturaId ? "Modifica lettura" : "Aggiungi lettura"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handlePost}>
-          <Form.Group controlId="pod" className="mb-3">
-            <Form.Label>POD</Form.Label>
-            <Form.Select onChange={handleChange} value={lettura.pod}>
-              {listaPod &&
-                listaPod.map(pod => (
-                  <option key={pod} value={pod}>
-                    {pod}
-                  </option>
-                ))}
-            </Form.Select>
-          </Form.Group>
-
+          {!modLetturaId && (
+            <Form.Group controlId="pod" className="mb-3">
+              <Form.Label>POD</Form.Label>
+              <Form.Select onChange={handleChange} value={lettura.pod}>
+                {listaPod &&
+                  listaPod.map(pod => (
+                    <option key={pod} value={pod}>
+                      {pod}
+                    </option>
+                  ))}
+              </Form.Select>
+            </Form.Group>
+          )}
           <Form.Group controlId="dataLettura" className="mb-3">
             <Form.Label>Data lettura</Form.Label>
             <Form.Control type="text" onChange={handleChange} value={lettura.dataLettura} placeholder="yyyy-MM-gg" />
@@ -152,7 +224,7 @@ const AddLetturaModal = () => {
           </Form.Group>
 
           <Button variant="primary" type="submit">
-            Aggiungi
+            {modLetturaId ? "Aggiorna" : "Aggiungi"}
           </Button>
         </Form>
       </Modal.Body>
