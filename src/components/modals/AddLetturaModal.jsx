@@ -97,10 +97,6 @@ const AddLetturaModal = () => {
   };
 
   useEffect(() => {
-    console.log(lettura);
-  }, [lettura]);
-
-  useEffect(() => {
     const fetchListaPod = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture/listapod`;
       const response = await axios.get(url, {
