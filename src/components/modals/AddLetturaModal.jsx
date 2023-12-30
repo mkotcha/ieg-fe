@@ -31,9 +31,9 @@ const AddLetturaModal = () => {
 
   const handlePost = async event => {
     event.preventDefault();
-    const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/letture/`;
+    const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/letture`;
     if (modLetturaId) {
-      const url = urlApi + modLetturaId;
+      const url = urlApi + "/" +modLetturaId;
       const response = await axios.put(url, lettura, {
         headers: { Authorization: `Bearer ${token}` },
       });

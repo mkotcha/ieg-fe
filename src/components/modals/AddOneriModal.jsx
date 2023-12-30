@@ -40,7 +40,7 @@ const AddOneriModal = () => {
     event.preventDefault();
     const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/oneri`;
     if (modOneriId) {
-      const url = urlApi + modOneriId;
+      const url = urlApi + "/" + modOneriId;
       const response = await axios.put(url, oneri, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -67,8 +67,17 @@ const AddOneriModal = () => {
   };
 
   useEffect(() => {
-    if (!showAddOneriModal) resetOneri();
-  }, [showAddOneriModal]);
+    const fetchOneri = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/oneri/` + modOneriId;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOneri(response.data);
+    };
+
+    if (modOneriId) fetchOneri();
+    else resetOneri();
+  }, [modOneriId, token]);
 
   return (
     <Modal
@@ -93,7 +102,7 @@ const AddOneriModal = () => {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group controlId="peTud" className="mb-3">
+          <Form.Group controlId="qeTud" className="mb-3">
             <Form.Label>qeTud</Form.Label>
             <Form.Control type="number" onChange={handleChange} value={oneri.qeTud} />
           </Form.Group>

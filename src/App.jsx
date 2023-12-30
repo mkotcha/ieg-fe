@@ -13,6 +13,8 @@ import AddLetturaModal from "./components/modals/AddLetturaModal";
 import UploadFlussiModal from "./components/modals/UploadFlussiModal";
 import DeleteLetturaModal from "./components/modals/DeleteLetturaModal";
 import AddOneriModal from "./components/modals/AddOneriModal";
+import DeleteOneriModal from "./components/modals/DeleteOneriModal";
+import AddDispacciamentoModal from "./components/modals/AddDispacciamentoModal";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
       <AddLetturaModal />
       <DeleteLetturaModal />
       <AddOneriModal />
+      <DeleteOneriModal />
+      <AddDispacciamentoModal />
     </BrowserRouter>
   );
 }

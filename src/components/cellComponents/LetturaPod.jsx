@@ -8,7 +8,6 @@ const LetturaPod = props => {
   return (
     <div className="d-flex ">
       <div className="me-auto">{props.data.fornitura.id}</div>
-
       <Button
         size="sm"
         variant="outline-secondary"
@@ -31,7 +30,7 @@ LetturaPod.propTypes = {
   data: PropTypes.shape({
     id: PropTypes.number.isRequired,
     fornitura: PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
     }).isRequired,
   }).isRequired,
 };
