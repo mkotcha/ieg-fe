@@ -32,10 +32,10 @@ export const showAddOneriModalAction = id => ({ type: SHOW_ADD_ONERI_MODAL, payl
 export const hideAddOneriModalAction = () => ({ type: HIDE_ADD_ONERI_MODAL });
 export const showDeleteOneriModalAction = id => ({ type: SHOW_DELETE_ONERI_MODAL, payload: id });
 export const hideDeleteOneriModalAction = () => ({ type: HIDE_DELETE_ONERI_MODAL });
-export const showAddDipacciamentoModalAction = id => ({ type: SHOW_ADD_DISPACCIAMENTO_MODAL, payload: id });
-export const hideAddDipacciamentoModalAction = () => ({ type: HIDE_ADD_DISPACCIAMENTO_MODAL });
-export const showDeleteDipacciamentoModalAction = id => ({ type: SHOW_DELETE_DISPACCIAMENTO_MODAL, payload: id });
-export const hideDeleteDipacciamentoModalAction = () => ({ type: HIDE_DELETE_DISPACCIAMENTO_MODAL });
+export const showAddDispacciamentoModalAction = id => ({ type: SHOW_ADD_DISPACCIAMENTO_MODAL, payload: id });
+export const hideAddDispacciamentoModalAction = () => ({ type: HIDE_ADD_DISPACCIAMENTO_MODAL });
+export const showDeleteDispacciamentoModalAction = id => ({ type: SHOW_DELETE_DISPACCIAMENTO_MODAL, payload: id });
+export const hideDeleteDispacciamentoModalAction = () => ({ type: HIDE_DELETE_DISPACCIAMENTO_MODAL });
 
 export const loginAction = (username, password) => {
   return async dispatch => {

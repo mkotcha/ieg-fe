@@ -92,7 +92,6 @@ const modalReducer = (state = initialState, action) => {
         showDeleteOneriModal: false,
         deleteOneriId: null,
       };
-
     case SHOW_ADD_DISPACCIAMENTO_MODAL:
       return {
         ...state,

@@ -2,10 +2,11 @@ import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import { Button, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { showAddDipacciamentoModalAction, showAddOneriModalAction } from "../redux/actions";
+import { showAddDispacciamentoModalAction, showAddOneriModalAction } from "../redux/actions";
 import { useEffect } from "react";
 import axios from "axios";
 import OneriTipo from "./cellComponents/OneriTipo";
+import DispacciamentoMod from "./cellComponents/DispacciamentoMod";
 
 const Oneri = () => {
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const Oneri = () => {
   const showAddOneriModal = useSelector(state => state.modal.showAddOneriModal);
   const showDeleteOneriModal = useSelector(state => state.modal.showDeleteOneriModal);
   const showAddDispacciamentoModal = useSelector(state => state.modal.showAddDispacciamentoModal);
-  const showDeleteDispacciamentoModal = useSelector(state => state.modal.showDeleteDipacciamentoModal);
+  const showDeleteDispacciamentoModal = useSelector(state => state.modal.showDeleteDispacciamentoModal);
   const [oneriRowData, setOneriRowData] = useState([]);
   const [oneriColDefs] = useState([
     { field: "tipo", headerName: "Tipo", filter: true, cellRenderer: OneriTipo },
@@ -34,6 +35,7 @@ const Oneri = () => {
   ]);
   const [dispacciamentoRowData, setDispacciamentoRowData] = useState([]);
   const [dispacciamentoColDefs] = useState([
+    { cellRenderer: DispacciamentoMod },
     { field: "trimestre", headerName: "Trimestre", type: "numericColumn", filter: true },
     { field: "anno", headerName: "Anno", type: "numericColumn", filter: true },
     { field: "capacita", headerName: "Capacità", type: "numericColumn" },
@@ -58,6 +60,11 @@ const Oneri = () => {
       });
       setOneriRowData(response.data);
     };
+
+    if (!showAddOneriModal && !showDeleteOneriModal) fetchOneri();
+  }, [showAddOneriModal, showDeleteOneriModal, token]);
+
+  useEffect(() => {
     const fetchDispacciamento = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/dispacciamento`;
       const response = await axios.get(url, {
@@ -65,10 +72,8 @@ const Oneri = () => {
       });
       setDispacciamentoRowData(response.data);
     };
-
-    if (!showAddOneriModal || !showDeleteOneriModal) fetchOneri();
-    if (!showAddDispacciamentoModal || !showDeleteDispacciamentoModal) fetchDispacciamento();
-  }, [showAddOneriModal, showDeleteDispacciamentoModal, showDeleteOneriModal, showAddDispacciamentoModal, token]);
+    if (!showAddDispacciamentoModal && !showDeleteDispacciamentoModal) fetchDispacciamento();
+  }, [showDeleteDispacciamentoModal, showAddDispacciamentoModal, token]);
 
   return (
     <Container fluid className="flex-grow-1">
@@ -97,7 +102,7 @@ const Oneri = () => {
         <div className="d-flex align-items-center mt-1">
           <h1>Dispacciamento</h1>
           <div className="ms-auto ">
-            <Button variant="primary" onClick={() => dispatch(showAddDipacciamentoModalAction())} className="me-2">
+            <Button variant="primary" onClick={() => dispatch(showAddDispacciamentoModalAction())} className="me-2">
               Aggiungi dispacciamento
             </Button>
           </div>

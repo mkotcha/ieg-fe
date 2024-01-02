@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { hideAddDipacciamentoModalAction } from "../../redux/actions";
+import { hideAddDispacciamentoModalAction } from "../../redux/actions";
 import axios from "axios";
 import { useEffect } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
@@ -40,7 +40,7 @@ const AddDispacciamentoModal = () => {
       });
       console.log(response);
       if (response.status === 200) {
-        dispatch(hideAddDipacciamentoModalAction());
+        dispatch(hideAddDispacciamentoModalAction());
       }
     } else {
       const url = urlApi;
@@ -49,7 +49,7 @@ const AddDispacciamentoModal = () => {
       });
       console.log(response);
       if (response.status === 201) {
-        dispatch(hideAddDipacciamentoModalAction());
+        dispatch(hideAddDispacciamentoModalAction());
       }
     }
   };
@@ -72,7 +72,7 @@ const AddDispacciamentoModal = () => {
   }, [modDispacciamentoId, token]);
 
   return (
-    <Modal size="lg" show={showAddDispacciamentoModal} onHide={() => dispatch(hideAddDipacciamentoModalAction())}>
+    <Modal size="lg" show={showAddDispacciamentoModal} onHide={() => dispatch(hideAddDispacciamentoModalAction())}>
       <Modal.Header closeButton>
         <Modal.Title>{modDispacciamentoId ? "Modifica dispacciamento" : "Aggiungi dispacciamento"}</Modal.Title>
       </Modal.Header>

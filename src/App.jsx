@@ -15,6 +15,7 @@ import DeleteLetturaModal from "./components/modals/DeleteLetturaModal";
 import AddOneriModal from "./components/modals/AddOneriModal";
 import DeleteOneriModal from "./components/modals/DeleteOneriModal";
 import AddDispacciamentoModal from "./components/modals/AddDispacciamentoModal";
+import DeleteDispacciamentoModal from "./components/modals/DeleteDispacciamentoModal";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
       <AddOneriModal />
       <DeleteOneriModal />
       <AddDispacciamentoModal />
+      <DeleteDispacciamentoModal />
     </BrowserRouter>
   );
 }
