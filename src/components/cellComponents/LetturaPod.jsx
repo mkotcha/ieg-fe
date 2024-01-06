@@ -30,7 +30,7 @@ LetturaPod.propTypes = {
   data: PropTypes.shape({
     id: PropTypes.number.isRequired,
     fornitura: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
 };
