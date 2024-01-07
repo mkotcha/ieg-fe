@@ -3,19 +3,30 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
+import { Link } from "react-router-dom";
 
 const Forniture = () => {
   const token = useSelector(state => state.auth.token);
   // const [showModal, setShowModal] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
-    { field: "id", headerName: "POD", flex: 3 },
-    { field: "cliente.ragioneSociale", headerName: "Ragione sociale", flex: 4 },
-    { field: "indirizzo", flex: 2 },
-    { field: "comune", flex: 3 },
-    { field: "provincia", flex: 1 },
-    { field: "cap", flex: 1 },
-    { field: "dataSwitch", flex: 2 },
+    {
+      field: "id",
+      headerName: "POD",
+      cellRenderer: function (params) {
+        return (
+          <Link to={`/fornitura/${params.value}`} className="text-decoration-none text-reset">
+            {params.value}
+          </Link>
+        );
+      },
+    },
+    { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
+    { field: "indirizzo" },
+    { field: "comune" },
+    { field: "provincia" },
+    { field: "cap" },
+    { field: "dataSwitch" },
   ]);
 
   const fetchForniture = async () => {

@@ -3,13 +3,24 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
+import { Link } from "react-router-dom";
 
 const Clienti = () => {
   const token = useSelector(state => state.auth.token);
   const [showModal, setShowModal] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
-    { field: "ragioneSociale", flex: 4 },
+    {
+      headerName: "Ragione sociale",
+      flex: 5,
+      cellRenderer: params => {
+        return (
+          <Link to={`/cliente/${params.data.id}`} className="text-decoration-none text-reset">
+            {params.data.ragioneSociale}
+          </Link>
+        );
+      },
+    },
     { field: "piva", flex: 2 },
     { field: "cf", flex: 2 },
     { field: "indirizzo", flex: 3 },

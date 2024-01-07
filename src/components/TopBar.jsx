@@ -17,7 +17,7 @@ const TopBar = () => {
         <Row>
           <Col className="mx-auto">
             <Navbar expand="md" className="bg-body-tertiary">
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Toggle aria-controls="basic-navbar-nav" className="me-3" />
               <div>
                 <Navbar.Collapse id="basic-navbar-nav">
                   <NavLink className="navbar-brand" to="/">

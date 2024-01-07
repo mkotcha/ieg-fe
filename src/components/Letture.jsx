@@ -6,8 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import LetturaPod from "./cellComponents/LetturaPod";
 import { showAddLetturaModalAction, showUploadModalAction } from "../redux/actions";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const Letture = () => {
+  const { pod } = useParams();
+  const [gridApi, setGridApi] = useState(null);
+
   const token = useSelector(state => state.auth.token);
   const showAddLetturaModal = useSelector(state => state.modal.showAddLetturaModal);
   const showDeleteLetturaModal = useSelector(state => state.modal.showDeleteLetturaModal);
@@ -35,6 +39,21 @@ const Letture = () => {
   const autoSizeStrategy = {
     type: "fitCellContents",
   };
+
+  const onGridReady = params => {
+    setGridApi(params.api);
+  };
+
+  useEffect(() => {
+    if (gridApi) {
+      const podFilterComponent = gridApi.getFilterInstance("fornitura.id");
+      podFilterComponent.setModel({
+        type: "equals",
+        filter: pod,
+      });
+      gridApi.onFilterChanged();
+    }
+  }, [gridApi, pod]);
 
   useEffect(() => {
     const fetchLetture = async () => {
@@ -68,6 +87,7 @@ const Letture = () => {
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
             <AgGridReact
+              onGridReady={onGridReady}
               autoSizeStrategy={autoSizeStrategy}
               suppressColumnVirtualisation={true}
               rowData={rowData}
