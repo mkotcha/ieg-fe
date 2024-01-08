@@ -48,7 +48,7 @@ const Forniture = () => {
           <h1>Forniture</h1>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
-            <AgGridReact rowData={rowData} columnDefs={colDefs} autoHeight={true} />
+            <AgGridReact rowData={rowData} columnDefs={colDefs} />
           </div>
         </div>
       </Container>

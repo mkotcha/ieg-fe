@@ -35,3 +35,7 @@ body {
   --ag-font-size: 15px;
   --ag-grid-size: 6px;
 }
+
+.ag-center-cols-viewport {
+  min-height: 36px !important;
+}
