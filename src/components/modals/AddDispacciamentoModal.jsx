@@ -88,35 +88,35 @@ const AddDispacciamentoModal = () => {
           </Form.Group>
           <Form.Group controlId="capacita" className="mb-3">
             <Form.Label>Capacità</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.capacita} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.capacita} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="eolico" className="mb-3">
             <Form.Label>Eolico</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.eolico} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.eolico} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="costoAm" className="mb-3">
             <Form.Label>Costo AM</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.costoAm} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.costoAm} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="dis" className="mb-3">
             <Form.Label>DIS</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.dis} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.dis} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="int73" className="mb-3">
             <Form.Label>INT73</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.int73} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.int73} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="msd" className="mb-3">
             <Form.Label>MSD</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.msd} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.msd} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="sicurezza" className="mb-3">
             <Form.Label>Sicurezza</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.sicurezza} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.sicurezza} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="trasmissione" className="mb-3">
             <Form.Label>Trasmissione</Form.Label>
-            <Form.Control type="number" step="0.001" value={dispacciamento.trasmissione} onChange={handleChange} />
+            <Form.Control type="number" step="0.000001" value={dispacciamento.trasmissione} onChange={handleChange} />
           </Form.Group>
           <Button variant="primary" type="submit">
             {modDispacciamentoId ? "Modifica" : "Aggiungi"}

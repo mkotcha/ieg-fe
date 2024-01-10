@@ -5,7 +5,6 @@ import { useCallback } from "react";
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import FatturaNumero from "./cellComponents/FatturaNumero";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +25,7 @@ const Cliente = () => {
       field: "id",
       headerName: "POD",
       cellRenderer: FornituraPod,
+      filter: true,
     },
     { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
     { field: "indirizzo" },
@@ -33,6 +33,11 @@ const Cliente = () => {
     { field: "provincia" },
     { field: "cap" },
     { field: "dataSwitch" },
+    { field: "potenzaDisponibile" },
+    { field: "potenzaImpegnata" },
+    { field: "tipoPrelievo" },
+    { field: "tipoContatore" },
+    { field: "codiceDistributore" },
   ]);
   // const [showModalCliente, setShowModalCliente] = useState(false);
   const [rowDataCliente, setRowDataCliente] = useState([]);
@@ -41,9 +46,10 @@ const Cliente = () => {
       headerName: "Ragione sociale",
       flex: 5,
       cellRenderer: ClienteTipo,
+      filter: true,
     },
-    { field: "piva", flex: 2 },
-    { field: "cf", flex: 2 },
+    { field: "piva", flex: 2, filter: true },
+    { field: "cf", flex: 2, filter: true },
     { field: "indirizzo", flex: 3 },
     { field: "cap", flex: 1 },
     { field: "provincia", flex: 1 },
@@ -57,16 +63,81 @@ const Cliente = () => {
       field: "numeroFattura",
       headerName: "Numero fattura",
       cellRenderer: FatturaNumero,
+      filter: true,
     },
     {
       field: "dataFattura",
       headerName: "Data emissione",
+      filter: true,
     },
     {
       field: "totaleImponibile",
       headerName: "Imponibile",
       valueFormatter: params => {
         const number = parseFloat(params.data.totaleImponibile);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "consumoTot",
+      headerName: "Consumo totale",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.consumoTot);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "totaleImposte",
+      headerName: "Totale Imposte",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleImposte);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "totaleMateria",
+      headerName: "Totale Materia",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleMateria);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "totaleTrasporto",
+      headerName: "Totale Trasporto",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleTrasporto);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "totaleOneri",
+      headerName: "Totale Oneri",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleOneri);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "totaleIva",
+      headerName: "Totale Iva",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleIva);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
+    {
+      field: "consumoTotP",
+      headerName: "Perdite Totali",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.consumoTotP);
         return isNaN(number) ? "" : number.toFixed(2);
       },
       type: "rightAligned",

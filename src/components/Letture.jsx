@@ -20,8 +20,8 @@ const Letture = () => {
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     { field: "fornitura.id", headerName: "POD", cellRenderer: LetturaPod, filter: true },
-    { field: "dataLettura", headerName: "data" },
-    { field: "tipoContatore", headerName: "Trattamento" },
+    { field: "dataLettura", headerName: "data", filter: true },
+    { field: "tipoContatore", headerName: "Trattamento", filter: true },
     { field: "raccolta", headerName: "Raccolta" },
     { field: "tipoDato", headerName: "Tipo dato" },
     { field: "validato", headerName: "Validato" },

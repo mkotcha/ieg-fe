@@ -17,6 +17,7 @@ const Forniture = () => {
       field: "id",
       headerName: "POD",
       cellRenderer: FornituraPod,
+      filter: true,
     },
     { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
     { field: "indirizzo" },

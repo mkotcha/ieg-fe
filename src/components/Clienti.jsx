@@ -16,12 +16,14 @@ const Clienti = () => {
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     {
+      field: "ragioneSociale",
       headerName: "Ragione sociale",
       flex: 5,
       cellRenderer: ClienteTipo,
+      filter: true,
     },
-    { field: "piva", flex: 2 },
-    { field: "cf", flex: 2 },
+    { field: "piva", flex: 2, filter: true },
+    { field: "cf", flex: 2, filter: true },
     { field: "indirizzo", flex: 3 },
     { field: "cap", flex: 1 },
     { field: "provincia", flex: 1 },
