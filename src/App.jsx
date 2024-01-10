@@ -18,6 +18,9 @@ import AddDispacciamentoModal from "./components/modals/AddDispacciamentoModal";
 import DeleteDispacciamentoModal from "./components/modals/DeleteDispacciamentoModal";
 import Fornitura from "./components/Fornitura";
 import Cliente from "./components/Cliente";
+import AddClienteModal from "./components/modals/AddClienteModal";
+import DeleteClienteModal from "./components/modals/DeleteClienteModal";
+import DeleteFornituraModal from "./components/modals/DeleteFornituraModal";
 
 function App() {
   return (
@@ -42,6 +45,9 @@ function App() {
       <DeleteOneriModal />
       <AddDispacciamentoModal />
       <DeleteDispacciamentoModal />
+      <AddClienteModal />
+      <DeleteClienteModal />
+      <DeleteFornituraModal />
     </BrowserRouter>
   );
 }

@@ -1,25 +1,24 @@
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import axios from "axios";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
-import { Link } from "react-router-dom";
+import { showAddClienteModalAction } from "../redux/actions";
+import ClienteTipo from "./cellComponents/ClienteTipo";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Clienti = () => {
   const token = useSelector(state => state.auth.token);
-  const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     {
       headerName: "Ragione sociale",
       flex: 5,
-      cellRenderer: params => {
-        return (
-          <Link to={`/cliente/${params.data.id}`} className="text-decoration-none text-reset">
-            {params.data.ragioneSociale}
-          </Link>
-        );
-      },
+      cellRenderer: ClienteTipo,
     },
     { field: "piva", flex: 2 },
     { field: "cf", flex: 2 },
@@ -30,6 +29,10 @@ const Clienti = () => {
     { field: "telefono", flex: 1 },
     { field: "email", flex: 1 },
   ]);
+
+  const autoSizeStrategy = {
+    type: "fitCellContents",
+  };
 
   const fetchClienti = async () => {
     const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
@@ -43,83 +46,34 @@ const Clienti = () => {
     fetchClienti();
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   return (
     <>
       <Container fluid className="flex-grow-1">
         <div className="d-flex flex-column  h-100">
-          <h1>Clienti</h1>
+          <div className="d-flex align-items-center">
+            <h1>Clienti</h1>
+            <Button variant="primary" onClick={() => dispatch(showAddClienteModalAction())} className=" ms-auto me-2">
+              Aggiungi cliente
+            </Button>
+          </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
-            <AgGridReact rowData={rowData} columnDefs={colDefs} />
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={colDefs}
+              autoSizeStrategy={autoSizeStrategy}
+              enableCellTextSelection={true}
+              autoHeight={true}
+            />
           </div>
         </div>
       </Container>
-      <div id="add-clienti">
-        <Button onClick={() => setShowModal(true)} variant="primary" className="rounded-pill ">
-          <i className="bi bi-plus-lg"></i>
-        </Button>
-      </div>
-      <Modal
-        size="lg"
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        aria-labelledby="example-modal-sizes-title-lg">
-        <Modal.Header closeButton>
-          <Modal.Title id="example-modal-sizes-title-lg">Aggiungi Cliente</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" controlId="ragioneSociale">
-              <Form.Label>Ragione sociale</Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="pIva">
-              <Form.Label>Partita IVA</Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="cf">
-              <Form.Label>Codice fiscale</Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="indirizzo">
-              <Form.Label>Indirizzo</Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-
-            <Row>
-              <Form.Group as={Col} xs={3} className="mb-3" controlId="cap">
-                <Form.Label>Cap</Form.Label>
-                <Form.Control type="text" placeholder="" />
-              </Form.Group>
-              <Form.Group as={Col} xs={3} className="mb-3" controlId="provincia">
-                <Form.Label>provincia</Form.Label>
-                <Form.Control type="text" placeholder="" />
-              </Form.Group>
-              <Form.Group as={Col} className="mb-3" controlId="comune">
-                <Form.Label>Comune</Form.Label>
-                <Form.Control type="text" placeholder="" />
-              </Form.Group>
-            </Row>
-
-            <Form.Group className="mb-3" controlId="">
-              <Form.Label></Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="">
-              <Form.Label></Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="">
-              <Form.Label></Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="">
-              <Form.Label></Form.Label>
-              <Form.Control type="text" placeholder="" />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-      </Modal>
     </>
   );
 };

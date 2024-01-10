@@ -104,51 +104,51 @@ const AddOneriModal = () => {
 
           <Form.Group controlId="qeTud" className="mb-3">
             <Form.Label>qeTud</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qeTud} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qeTud} />
           </Form.Group>
           <Form.Group controlId="qpTdm" className="mb-3">
             <Form.Label>qpTdm</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qpTdm} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qpTdm} />
           </Form.Group>
           <Form.Group controlId="qfTud" className="mb-3">
             <Form.Label>qfTud</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qfTud} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qfTud} />
           </Form.Group>
           <Form.Group controlId="qfMis" className="mb-3">
             <Form.Label>qfMis</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qfMis} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qfMis} />
           </Form.Group>
           <Form.Group controlId="qeArim" className="mb-3">
             <Form.Label>qeArim</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qeArim} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qeArim} />
           </Form.Group>
           <Form.Group controlId="qeAsos" className="mb-3">
             <Form.Label>qeAsos</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qeAsos} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qeAsos} />
           </Form.Group>
           <Form.Group controlId="qeUc3" className="mb-3">
             <Form.Label>qeUc3</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qeUc3} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qeUc3} />
           </Form.Group>
           <Form.Group controlId="qpArim" className="mb-3">
             <Form.Label>qpArim</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qpArim} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qpArim} />
           </Form.Group>
           <Form.Group controlId="qpAsos" className="mb-3">
             <Form.Label>qpAsos</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qpAsos} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qpAsos} />
           </Form.Group>
           <Form.Group controlId="qpOds" className="mb-3">
             <Form.Label>qpOds</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qpOds} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qpOds} />
           </Form.Group>
           <Form.Group controlId="qfArim" className="mb-3">
             <Form.Label>qfArim</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qfArim} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qfArim} />
           </Form.Group>
           <Form.Group controlId="qfAsos" className="mb-3">
             <Form.Label>qfAsos</Form.Label>
-            <Form.Control type="number" onChange={handleChange} value={oneri.qfAsos} />
+            <Form.Control type="number" step="0.001" onChange={handleChange} value={oneri.qfAsos} />
           </Form.Group>
           <Form.Group controlId="trimestre" className="mb-3">
             <Form.Label>Trimestre</Form.Label>

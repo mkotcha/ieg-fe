@@ -13,6 +13,14 @@ import {
   HIDE_DELETE_DISPACCIAMENTO_MODAL,
   SHOW_ADD_DISPACCIAMENTO_MODAL,
   SHOW_DELETE_DISPACCIAMENTO_MODAL,
+SHOW_ADD_CLIENTE_MODAL,
+HIDE_ADD_CLIENTE_MODAL,
+SHOW_DELETE_CLIENTE_MODAL,
+HIDE_DELETE_CLIENTE_MODAL,
+SHOW_ADD_FORNITURA_MODAL,
+HIDE_ADD_FORNITURA_MODAL,
+SHOW_DELETE_FORNITURA_MODAL,
+HIDE_DELETE_FORNITURA_MODAL,
 } from "../actions";
 
 const initialState = {
@@ -29,6 +37,14 @@ const initialState = {
   modDispacciamentoId: null,
   showDeleteDispacciamentoModal: false,
   deleteDispacciamentoId: null,
+  showAddClienteModal: false,
+  modClienteId: null,
+  showDeleteClienteModal: false,
+  deleteClienteId: null,
+  showAddFornituraModal: false,
+  modFornituraId: null,
+  showDeleteFornituraModal: false,
+  deleteFornituraId: null,
 };
 
 const modalReducer = (state = initialState, action) => {
@@ -115,6 +131,54 @@ const modalReducer = (state = initialState, action) => {
         ...state,
         showDeleteDispacciamentoModal: false,
         deleteDispacciamentoId: null,
+      };
+    case SHOW_ADD_CLIENTE_MODAL:
+      return {
+        ...state,
+        showAddClienteModal: true,
+        modClienteId: action.payload,
+      };
+    case HIDE_ADD_CLIENTE_MODAL:
+      return {
+        ...state,
+        showAddClienteModal: false,
+        modClienteId: null,
+      };
+    case SHOW_DELETE_CLIENTE_MODAL:
+      return {
+        ...state,
+        showDeleteClienteModal: true,
+        deleteClienteId: action.payload,
+      };
+    case HIDE_DELETE_CLIENTE_MODAL:
+      return {
+        ...state,
+        showDeleteClienteModal: false,
+        deleteClienteId: null,
+      };
+    case SHOW_ADD_FORNITURA_MODAL:
+      return {
+        ...state,
+        showAddFornituraModal: true,
+        modFornituraId: action.payload,
+      };
+    case HIDE_ADD_FORNITURA_MODAL:
+      return {
+        ...state,
+        showAddFornituraModal: false,
+        modFornituraId: null,
+      };
+    case SHOW_DELETE_FORNITURA_MODAL:
+      return {
+        ...state,
+        showDeleteFornituraModal: true,
+        deleteFornituraId: action.payload,
+      };
+    case HIDE_DELETE_FORNITURA_MODAL:
+      return {
+        ...state,
+        showDeleteFornituraModal: false,
+        deleteFornituraId: null,
       };
 
     default:

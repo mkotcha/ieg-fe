@@ -7,11 +7,16 @@ import { Button, Container, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import FatturaNumero from "./cellComponents/FatturaNumero";
+import { useNavigate } from "react-router-dom";
+import ClienteTipo from "./cellComponents/ClienteTipo";
+import FornituraPod from "./cellComponents/FornituraPod";
 
 const Cliente = () => {
   const { id } = useParams();
   const [cliente, setCliente] = useState({});
   const token = useSelector(state => state.auth.token);
+  const navigate = useNavigate();
   const currentMonth = new Date().getMonth();
   const [mese, setMese] = useState(currentMonth === 0 ? 12 : currentMonth);
   const [anno, setAnno] = useState(currentMonth === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear());
@@ -20,13 +25,7 @@ const Cliente = () => {
     {
       field: "id",
       headerName: "POD",
-      cellRenderer: function (params) {
-        return (
-          <Link to={`/fornitura/${params.value}`} className="text-decoration-none text-reset">
-            {params.value}
-          </Link>
-        );
-      },
+      cellRenderer: FornituraPod,
     },
     { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
     { field: "indirizzo" },
@@ -41,13 +40,7 @@ const Cliente = () => {
     {
       headerName: "Ragione sociale",
       flex: 5,
-      cellRenderer: params => {
-        return (
-          <Link to={`/cliente/${params.data.id}`} className="text-decoration-none text-reset">
-            {params.data.ragioneSociale}
-          </Link>
-        );
-      },
+      cellRenderer: ClienteTipo,
     },
     { field: "piva", flex: 2 },
     { field: "cf", flex: 2 },
@@ -63,13 +56,26 @@ const Cliente = () => {
     {
       field: "numeroFattura",
       headerName: "Numero fattura",
+      cellRenderer: FatturaNumero,
     },
     {
-      field: "dataEmissione",
+      field: "dataFattura",
       headerName: "Data emissione",
     },
-    { field: "importo", headerName: "Importo" },
+    {
+      field: "totaleImponibile",
+      headerName: "Imponibile",
+      valueFormatter: params => {
+        const number = parseFloat(params.data.totaleImponibile);
+        return isNaN(number) ? "" : number.toFixed(2);
+      },
+      type: "rightAligned",
+    },
   ]);
+
+  const autoSizeStrategy = {
+    type: "fitCellContents",
+  };
 
   const fetchFatture = useCallback(async () => {
     const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti/${id}/fatture`;
@@ -111,6 +117,12 @@ const Cliente = () => {
     }
   };
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   return (
     <>
       <Container fluid className="flex-grow-1">
@@ -119,7 +131,13 @@ const Cliente = () => {
           <div className="border rounded-3 bg-body-tertiary">
             <h3 className="m-2">Riepilogo</h3>
             <div className="ag-theme-quartz-dark ">
-              <AgGridReact rowData={rowDataCliente} columnDefs={colDefsCliente} domLayout={`autoHeight`} />
+              <AgGridReact
+                rowData={rowDataCliente}
+                columnDefs={colDefsCliente}
+                autoSizeStrategy={autoSizeStrategy}
+                domLayout={`autoHeight`}
+                enableCellTextSelection={true}
+              />
             </div>
           </div>
         </div>
@@ -127,7 +145,13 @@ const Cliente = () => {
         <div className="border rounded-3 bg-body-tertiary mb-3">
           <h3 className="m-2">Forniture</h3>
           <div className="ag-theme-quartz-dark ">
-            <AgGridReact rowData={rowDataForniture} columnDefs={colDefsForniture} domLayout={`autoHeight`} />
+            <AgGridReact
+              rowData={rowDataForniture}
+              columnDefs={colDefsForniture}
+              autoSizeStrategy={autoSizeStrategy}
+              domLayout={`autoHeight`}
+              enableCellTextSelection={true}
+            />
           </div>
         </div>
         <div className="border rounded-3 bg-body-tertiary">
@@ -164,7 +188,14 @@ const Cliente = () => {
             </Button>
           </div>
           <div className="ag-theme-quartz-dark ">
-            <AgGridReact rowData={rowDataFatture} columnDefs={colDefsFatture} domLayout={`autoHeight`} />
+            <AgGridReact
+              rowData={rowDataFatture}
+              columnDefs={colDefsFatture}
+              autoSizeStrategy={autoSizeStrategy}
+              domLayout={`autoHeight`}
+              enableCellTextSelection={true}
+              autoHeight={true}
+            />
           </div>
         </div>
       </Container>

@@ -7,12 +7,13 @@ import LetturaPod from "./cellComponents/LetturaPod";
 import { showAddLetturaModalAction, showUploadModalAction } from "../redux/actions";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Letture = () => {
   const { pod } = useParams();
   const [gridApi, setGridApi] = useState(null);
-
   const token = useSelector(state => state.auth.token);
+  const navigate = useNavigate();
   const showAddLetturaModal = useSelector(state => state.modal.showAddLetturaModal);
   const showDeleteLetturaModal = useSelector(state => state.modal.showDeleteLetturaModal);
   const dispatch = useDispatch();
@@ -66,6 +67,12 @@ const Letture = () => {
 
     if (!showAddLetturaModal || !showDeleteLetturaModal) fetchLetture();
   }, [showAddLetturaModal, showDeleteLetturaModal, token]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
     <>

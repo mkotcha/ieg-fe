@@ -39,3 +39,12 @@ body {
 .ag-center-cols-viewport {
   min-height: 36px !important;
 }
+
+.ag-cell-focus,.ag-cell-no-focus{
+  border:none !important;
+}
+/* This CSS is to not apply the border for the column having 'no-border' class */
+.no-border.ag-cell:focus{
+  border:none !important;
+  outline: none;
+}

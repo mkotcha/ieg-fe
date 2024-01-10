@@ -7,10 +7,12 @@ import { useEffect } from "react";
 import axios from "axios";
 import OneriTipo from "./cellComponents/OneriTipo";
 import DispacciamentoMod from "./cellComponents/DispacciamentoMod";
+import { useNavigate } from "react-router-dom";
 
 const Oneri = () => {
   const dispatch = useDispatch();
   const token = useSelector(state => state.auth.token);
+  const navigate = useNavigate();
   const showAddOneriModal = useSelector(state => state.modal.showAddOneriModal);
   const showDeleteOneriModal = useSelector(state => state.modal.showDeleteOneriModal);
   const showAddDispacciamentoModal = useSelector(state => state.modal.showAddDispacciamentoModal);
@@ -74,6 +76,12 @@ const Oneri = () => {
     };
     if (!showAddDispacciamentoModal && !showDeleteDispacciamentoModal) fetchDispacciamento();
   }, [showDeleteDispacciamentoModal, showAddDispacciamentoModal, token]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
     <Container fluid className="flex-grow-1">

@@ -3,23 +3,20 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import FornituraPod from "./cellComponents/FornituraPod";
 
 const Forniture = () => {
   const token = useSelector(state => state.auth.token);
   // const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     {
       field: "id",
       headerName: "POD",
-      cellRenderer: function (params) {
-        return (
-          <Link to={`/fornitura/${params.value}`} className="text-decoration-none text-reset">
-            {params.value}
-          </Link>
-        );
-      },
+      cellRenderer: FornituraPod,
     },
     { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
     { field: "indirizzo" },
@@ -28,6 +25,10 @@ const Forniture = () => {
     { field: "cap" },
     { field: "dataSwitch" },
   ]);
+
+  const autoSizeStrategy = {
+    type: "fitCellContents",
+  };
 
   const fetchForniture = async () => {
     const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture?size=50`;
@@ -41,6 +42,12 @@ const Forniture = () => {
     fetchForniture();
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   return (
     <>
       <Container fluid className="flex-grow-1">
@@ -48,7 +55,7 @@ const Forniture = () => {
           <h1>Forniture</h1>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
-            <AgGridReact rowData={rowData} columnDefs={colDefs} />
+            <AgGridReact rowData={rowData} columnDefs={colDefs} autoSizeStrategy={autoSizeStrategy} />
           </div>
         </div>
       </Container>

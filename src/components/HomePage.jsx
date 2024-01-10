@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [clienti, setClienti] = useState(null);
@@ -14,6 +15,7 @@ const HomePage = () => {
   const [mese, setMese] = useState(currentMonth === 0 ? 12 : currentMonth);
   const [anno, setAnno] = useState(currentMonth === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear());
   const token = useSelector(state => state.auth.token);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClienti = async () => {
@@ -58,6 +60,12 @@ const HomePage = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
     <Container fluid className="content">
