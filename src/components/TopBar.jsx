@@ -24,9 +24,9 @@ const TopBar = () => {
                     IEG
                   </NavLink>
                   <Nav className="me-auto">
-                    {/* <NavLink to={"/"} className="nav-link">
+                    <NavLink to={"/"} className="nav-link">
                       Home
-                    </NavLink> */}
+                    </NavLink>
                     <NavLink to={"/clienti"} className="nav-link">
                       Clienti
                     </NavLink>
