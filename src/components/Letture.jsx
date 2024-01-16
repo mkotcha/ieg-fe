@@ -6,17 +6,22 @@ import { useDispatch, useSelector } from "react-redux";
 import LetturaPod from "./cellComponents/LetturaPod";
 import { showAddLetturaModalAction, showUploadModalAction } from "../redux/actions";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Letture = () => {
+  const { pod } = useParams();
+  const [gridApi, setGridApi] = useState(null);
   const token = useSelector(state => state.auth.token);
+  const navigate = useNavigate();
   const showAddLetturaModal = useSelector(state => state.modal.showAddLetturaModal);
   const showDeleteLetturaModal = useSelector(state => state.modal.showDeleteLetturaModal);
   const dispatch = useDispatch();
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     { field: "fornitura.id", headerName: "POD", cellRenderer: LetturaPod, filter: true },
-    { field: "dataLettura", headerName: "data" },
-    { field: "tipoContatore", headerName: "Trattamento" },
+    { field: "dataLettura", headerName: "data", filter: true },
+    { field: "tipoContatore", headerName: "Trattamento", filter: true },
     { field: "raccolta", headerName: "Raccolta" },
     { field: "tipoDato", headerName: "Tipo dato" },
     { field: "validato", headerName: "Validato" },
@@ -36,6 +41,21 @@ const Letture = () => {
     type: "fitCellContents",
   };
 
+  const onGridReady = params => {
+    setGridApi(params.api);
+  };
+
+  useEffect(() => {
+    if (gridApi) {
+      const podFilterComponent = gridApi.getFilterInstance("fornitura.id");
+      podFilterComponent.setModel({
+        type: "equals",
+        filter: pod,
+      });
+      gridApi.onFilterChanged();
+    }
+  }, [gridApi, pod]);
+
   useEffect(() => {
     const fetchLetture = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=10000&sort=dataLettura,desc`;
@@ -47,6 +67,12 @@ const Letture = () => {
 
     if (!showAddLetturaModal || !showDeleteLetturaModal) fetchLetture();
   }, [showAddLetturaModal, showDeleteLetturaModal, token]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
     <>
@@ -68,6 +94,7 @@ const Letture = () => {
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
             <AgGridReact
+              onGridReady={onGridReady}
               autoSizeStrategy={autoSizeStrategy}
               suppressColumnVirtualisation={true}
               rowData={rowData}
