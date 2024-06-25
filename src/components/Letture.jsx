@@ -18,6 +18,7 @@ const Letture = () => {
   const showDeleteLetturaModal = useSelector(state => state.modal.showDeleteLetturaModal);
   const dispatch = useDispatch();
   const [rowData, setRowData] = useState([]);
+  const [localeIt] = useState({ thousandSeparator: ".", decimalSeparator: "," });
   const [colDefs] = useState([
     { field: "fornitura.id", headerName: "POD", cellRenderer: LetturaPod, filter: true },
     { field: "dataLettura", headerName: "data", filter: true },
@@ -25,16 +26,77 @@ const Letture = () => {
     { field: "raccolta", headerName: "Raccolta" },
     { field: "tipoDato", headerName: "Tipo dato" },
     { field: "validato", headerName: "Validato" },
-    { field: "potMax", headerName: "PotMax", type: "numericColumn" },
-    { field: "eaF1", headerName: "EaF1", type: "numericColumn" },
-    { field: "eaF2", headerName: "EaF2", type: "numericColumn" },
-    { field: "eaF3", headerName: "EaF3", type: "numericColumn" },
-    { field: "erF1", headerName: "ErF1", type: "numericColumn" },
-    { field: "erF2", headerName: "ErF2", type: "numericColumn" },
-    { field: "erF3", headerName: "ErF3", type: "numericColumn" },
-    { field: "potF1", headerName: "PotF1", type: "numericColumn" },
-    { field: "potF2", headerName: "PotF2", type: "numericColumn" },
-    { field: "potF3", headerName: "PotF3", type: "numericColumn" },
+    {
+      field: "potMax",
+      headerName: "PotMax",
+      type: "numericColumn",
+      valueFormatter: params => {
+        // Converte la stringa in un numero
+        const numberValue = parseFloat(params.value);
+
+        // Verifica se la conversione è riuscita
+        if (isNaN(numberValue)) {
+          return params.value; // Restituisce il valore originale se non è un numero
+        }
+
+        // Restituisce il numero formattato localmente
+        return numberValue.toLocaleString("it-IT");
+      },
+    },
+    {
+      field: "eaF1",
+      headerName: "EaF1",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "eaF2",
+      headerName: "EaF2",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "eaF3",
+      headerName: "EaF3",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "erF1",
+      headerName: "ErF1",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "erF2",
+      headerName: "ErF2",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "erF3",
+      headerName: "ErF3",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "potF1",
+      headerName: "PotF1",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "potF2",
+      headerName: "PotF2",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
+    {
+      field: "potF3",
+      headerName: "PotF3",
+      type: "numericColumn",
+      valueFormatter: params => params.value.toLocaleString("it-IT"),
+    },
     { field: "note", headerName: "Note" },
   ]);
   const autoSizeStrategy = {
@@ -99,6 +161,7 @@ const Letture = () => {
               suppressColumnVirtualisation={true}
               rowData={rowData}
               columnDefs={colDefs}
+              localeText={localeIt}
               autoHeight={true}
               pagination={true}
               enableCellTextSelection={true}
