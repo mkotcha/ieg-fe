@@ -21,6 +21,7 @@ import Cliente from "./components/Cliente";
 import AddClienteModal from "./components/modals/AddClienteModal";
 import DeleteClienteModal from "./components/modals/DeleteClienteModal";
 import DeleteFornituraModal from "./components/modals/DeleteFornituraModal";
+import AddFornituraModal from "./components/modals/AddFornituraModal";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
       <AddDispacciamentoModal />
       <DeleteDispacciamentoModal />
       <AddClienteModal />
+      <AddFornituraModal />
       <DeleteClienteModal />
       <DeleteFornituraModal />
     </BrowserRouter>

@@ -48,7 +48,7 @@ const Cliente = () => {
       cellRenderer: ClienteTipo,
       filter: true,
     },
-    { field: "piva", flex: 2, filter: true },
+    { field: "pIva", flex: 2, filter: true },
     { field: "cf", flex: 2, filter: true },
     { field: "indirizzo", flex: 3 },
     { field: "cap", flex: 1 },

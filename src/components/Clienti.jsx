@@ -12,6 +12,8 @@ const Clienti = () => {
   const token = useSelector(state => state.auth.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const showAddClienteModal = useSelector(state => state.modal.showAddClienteModal);
+  const showDeleteClienteModal = useSelector(state => state.modal.showDeleteClienteModal);
 
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
@@ -22,7 +24,7 @@ const Clienti = () => {
       cellRenderer: ClienteTipo,
       filter: true,
     },
-    { field: "piva", flex: 2, filter: true },
+    { field: "pIva", flex: 2, filter: true },
     { field: "cf", flex: 2, filter: true },
     { field: "indirizzo", flex: 3 },
     { field: "cap", flex: 1 },
@@ -36,17 +38,24 @@ const Clienti = () => {
     type: "fitCellContents",
   };
 
-  const fetchClienti = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setRowData(response.data.content);
-  };
+  // useState(() => {
+  //   fetchClienti();
+  // }),
+  //   [];
 
-  useState(() => {
-    fetchClienti();
-  }, []);
+  useEffect(() => {
+    const fetchClienti = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRowData(response.data.content);
+    };
+    console.log("daje");
+    if (!showAddClienteModal || !showDeleteClienteModal) {
+      fetchClienti();
+    }
+  }, [showAddClienteModal, showDeleteClienteModal, token]);
 
   useEffect(() => {
     if (!token) {
