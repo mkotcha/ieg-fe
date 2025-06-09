@@ -1,5 +1,5 @@
 @use "ag-grid-community/styles" as ag;
-@import "./overrides";
+@use "./overrides" as *; // Use `as *` to avoid namespace for overrides
 
 @include ag.grid-styles();
 
@@ -9,7 +9,6 @@ body {
 
 #root {
   height: 100vh;
-  // min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -40,11 +39,12 @@ body {
   min-height: 36px !important;
 }
 
-.ag-cell-focus,.ag-cell-no-focus{
-  border:none !important;
+.ag-cell-focus, .ag-cell-no-focus {
+  border: none !important;
 }
+
 /* This CSS is to not apply the border for the column having 'no-border' class */
-.no-border.ag-cell:focus{
-  border:none !important;
+.no-border.ag-cell:focus {
+  border: none !important;
   outline: none;
 }
