@@ -10,9 +10,10 @@ import { showAddFornituraModalAction } from "../redux/actions";
 
 const Forniture = () => {
   const token = useSelector(state => state.auth.token);
-  // const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const showAddFornituraModal = useSelector(state => state.modal.showAddFornituraModal);
+  const showDeleteFornituraModal = useSelector(state => state.modal.showDeleteFornituraModal);
   const [rowData, setRowData] = useState([]);
   const [colDefs] = useState([
     {
@@ -33,17 +34,19 @@ const Forniture = () => {
     type: "fitCellContents",
   };
 
-  const fetchForniture = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture?size=50`;
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setRowData(response.data.content);
-  };
+  useEffect(() => {
+    const fetchForniture = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture?size=10000`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRowData(response.data.content);
+    };
 
-  useState(() => {
-    fetchForniture();
-  }, []);
+    if (!showAddFornituraModal || !showDeleteFornituraModal) {
+      fetchForniture();
+    }
+  }, [showAddFornituraModal, showDeleteFornituraModal, token]);
 
   useEffect(() => {
     if (!token) {

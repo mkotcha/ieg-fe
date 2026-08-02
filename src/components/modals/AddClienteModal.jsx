@@ -13,7 +13,7 @@ const AddClienteModal = () => {
   const [cliente, setCliente] = useState({
     id: "",
     ragioneSociale: "",
-    piva: "",
+    pIva: "",
     cf: "",
     indirizzo: "",
     cap: "",
@@ -57,7 +57,7 @@ const AddClienteModal = () => {
     setCliente({
       id: "",
       ragioneSociale: "",
-      piva: "",
+      pIva: "",
       cf: "",
       indirizzo: "",
       cap: "",
@@ -79,7 +79,7 @@ const AddClienteModal = () => {
         setCliente({
           id: data.id || "",
           ragioneSociale: data.ragioneSociale || "",
-          piva: data.piva || "",
+          pIva: data.pIva || "",
           cf: data.cf || "",
           indirizzo: data.indirizzo || "",
           cap: data.cap || "",
@@ -112,9 +112,9 @@ const AddClienteModal = () => {
               <Form.Label>Ragione sociale</Form.Label>
               <Form.Control type="text" value={cliente.ragioneSociale} onChange={handleChange} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="piva">
+            <Form.Group className="mb-3" controlId="pIva">
               <Form.Label>Partita IVA</Form.Label>
-              <Form.Control type="text" onChange={handleChange} value={cliente.piva} />
+              <Form.Control type="text" onChange={handleChange} value={cliente.pIva} />
             </Form.Group>
             <Form.Group className="mb-3" controlId="cf">
               <Form.Label>Codice fiscale</Form.Label>

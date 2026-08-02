@@ -93,12 +93,15 @@ const AddOneriModal = () => {
           <Form.Group controlId="tipo" className="mb-3">
             <Form.Label>Tipo</Form.Label>
             <Form.Select onChange={handleChange} value={oneri.tipo}>
+              <option value="TD">TD</option>
+              <option value="BTA">BTA</option>
               <option value="BTA1">BTA1</option>
               <option value="BTA2">BTA2</option>
               <option value="BTA3">BTA3</option>
               <option value="BTA4">BTA4</option>
               <option value="BTA5">BTA5</option>
               <option value="BTA6">BTA6</option>
+              <option value="BTA6C">BTA6C</option>
             </Form.Select>
           </Form.Group>
 

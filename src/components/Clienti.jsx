@@ -45,13 +45,12 @@ const Clienti = () => {
 
   useEffect(() => {
     const fetchClienti = async () => {
-      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=10000`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRowData(response.data.content);
     };
-    console.log("daje");
     if (!showAddClienteModal || !showDeleteClienteModal) {
       fetchClienti();
     }

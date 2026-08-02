@@ -10,25 +10,25 @@ const AddFornituraModal = () => {
   const modFornituraId = useSelector(state => state.modal.modFornituraId);
   const token = useSelector(state => state.auth.token);
   const dispatch = useDispatch();
+  const [listaClienti, setListaClienti] = useState([]);
   const [fornitura, setFornitura] = useState({
     id: "",
-    bta: "",
+    bta: "TD",
     idCliente: "",
-    codiceDistributore: "",
+    codiceDistributore: "EDIST",
     comune: "",
     dataSwitch: "",
     dataSwitchOut: "",
-    fatturazione: "",
+    fatturazione: "MENSILE",
     fornitore: "",
     indirizzo: "",
     iva: 0,
     potenzaDisponibile: 0,
     potenzaImpegnata: 0,
-    íddPrezzo: "",
-    idProgrammazione: "",
     provincia: "",
-    tipoContatore: "",
-    tipoPrelievo: "",
+    tipoContatore: "ORARIO",
+    tipoPrelievo: "BT",
+    cap: "",
   });
 
   const handleChange = event => {
@@ -38,31 +38,64 @@ const AddFornituraModal = () => {
   };
 
   const handlePost = async event => {
-    console.log(event);
+    event.preventDefault();
+    const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture`;
+    if (modFornituraId) {
+      const url = urlApi + "/" + modFornituraId;
+      const response = await axios.put(url, fornitura, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response);
+      if (response.status === 200) {
+        dispatch(hideAddFornituraModalAction());
+      }
+    } else {
+      const url = urlApi;
+      const response = await axios.post(url, fornitura, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response);
+      if (response.status === 201) {
+        dispatch(hideAddFornituraModalAction());
+      }
+    }
   };
 
   const resetFornitura = () => {
     setFornitura({
       id: "",
-      bta: "",
+      bta: "TD",
       idCliente: "",
-      codiceDistributore: "",
+      codiceDistributore: "EDIST",
       comune: "",
       dataSwitch: "",
       dataSwitchOut: "",
-      fatturazione: "",
+      fatturazione: "MENSILE",
       fornitore: "",
       indirizzo: "",
       iva: 0,
       potenzaDisponibile: 0,
       potenzaImpegnata: 0,
-      íddPrezzo: "",
-      idProgrammazione: "",
       provincia: "",
-      tipoContatore: "",
-      tipoPrelievo: "",
+      tipoContatore: "ORARIO",
+      tipoPrelievo: "BT",
+      cap: "",
     });
   };
+
+  useEffect(() => {
+    const fetchListaClienti = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=10000`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setListaClienti(response.data.content);
+    };
+
+    if (showAddFornituraModal) {
+      fetchListaClienti();
+    }
+  }, [showAddFornituraModal, token]);
 
   useEffect(() => {
     if (modFornituraId) {
@@ -74,92 +107,174 @@ const AddFornituraModal = () => {
         const data = response.data;
         setFornitura({
           id: data.id || "",
-          bta: data.bta || "",
-          idCliente: data.idCliente || "",
-          codiceDistributore: data.codiceDistributore || "",
+          bta: data.bta || "TD",
+          idCliente: data.cliente ? String(data.cliente.id) : "",
+          codiceDistributore: data.codiceDistributore || "EDIST",
           comune: data.comune || "",
           dataSwitch: data.dataSwitch || "",
           dataSwitchOut: data.dataSwitchOut || "",
-          fatturazione: data.fatturazione || "",
+          fatturazione: data.fatturazione || "MENSILE",
           fornitore: data.fornitore || "",
           indirizzo: data.indirizzo || "",
-          iva: data.iva || 0,
-          potenzaDisponibile: data.potenzaDisponibile || 0,
-          potenzaImpegnata: data.potenzaImpegnata || 0,
-          íddPrezzo: data.íddPrezzo || "",
-          idProgrammazione: data.idProgrammazione || "",
+          iva: data.iva ?? 0,
+          potenzaDisponibile: data.potenzaDisponibile ?? 0,
+          potenzaImpegnata: data.potenzaImpegnata ?? 0,
           provincia: data.provincia || "",
-          tipoContatore: data.tipoContatore || "",
-          tipoPrelievo: data.tipoContatore || "",
+          tipoContatore: data.tipoContatore || "ORARIO",
+          tipoPrelievo: data.tipoPrelievo || "BT",
+          cap: data.cap ?? "",
         });
       };
       fetchFornitura();
+    } else {
+      resetFornitura();
     }
   }, [modFornituraId, token]);
 
   return (
-    <>
-      dajeeeeeeeeeeeeeee
-      <Modal
-        size="lg"
-        show={showAddFornituraModal}
-        onHide={() => {
-          dispatch(hideAddFornituraModalAction());
-          resetFornitura();
-        }}
-        aria-labelledby="example-modal-sizes-title-lg">
-        <Modal.Header closeButton>
-          <Modal.Title>{modFornituraId ? "Modifica fornitura" : "Aggiungi Fornitura"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handlePost}>
-            <Form.Group className="mb-3" controlId="ragioneSociale">
-              <Form.Label>Ragione sociale</Form.Label>
-              <Form.Control type="text" value={fornitura.ragioneSociale} onChange={handleChange} />
+    <Modal
+      size="lg"
+      show={showAddFornituraModal}
+      onHide={() => {
+        dispatch(hideAddFornituraModalAction());
+      }}
+      aria-labelledby="example-modal-sizes-title-lg">
+      <Modal.Header closeButton>
+        <Modal.Title>{modFornituraId ? "Modifica fornitura" : "Aggiungi Fornitura"}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handlePost}>
+          {!modFornituraId && (
+            <Form.Group className="mb-3" controlId="id">
+              <Form.Label>POD</Form.Label>
+              <Form.Control type="text" value={fornitura.id} onChange={handleChange} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="pIva">
-              <Form.Label>Partita IVA</Form.Label>
-              <Form.Control type="text" onChange={handleChange} value={fornitura.pIva} />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="cf">
-              <Form.Label>Codice fiscale</Form.Label>
-              <Form.Control type="text" onChange={handleChange} value={fornitura.cf} />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="indirizzo">
-              <Form.Label>Indirizzo</Form.Label>
-              <Form.Control type="text" value={fornitura.indirizzo} onChange={handleChange} />
-            </Form.Group>
+          )}
+          <Form.Group className="mb-3" controlId="idCliente">
+            <Form.Label>Cliente</Form.Label>
+            <Form.Select onChange={handleChange} value={fornitura.idCliente}>
+              <option value="" disabled>
+                Seleziona un cliente
+              </option>
+              {listaClienti.map(cliente => (
+                <option key={cliente.id} value={cliente.id}>
+                  {cliente.ragioneSociale}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-            <Row>
-              <Form.Group as={Col} xs={3} className="mb-3" controlId="cap">
-                <Form.Label>Cap</Form.Label>
-                <Form.Control type="text" value={fornitura.cap} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group as={Col} xs={3} className="mb-3" controlId="provincia">
-                <Form.Label>provincia</Form.Label>
-                <Form.Control type="text" value={fornitura.provincia} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group as={Col} className="mb-3" controlId="comune">
-                <Form.Label>Comune</Form.Label>
-                <Form.Control type="text" value={fornitura.comune} onChange={handleChange} />
-              </Form.Group>
-            </Row>
+          <Form.Group className="mb-3" controlId="indirizzo">
+            <Form.Label>Indirizzo</Form.Label>
+            <Form.Control type="text" value={fornitura.indirizzo} onChange={handleChange} />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="telefono">
-              <Form.Label>Telefono</Form.Label>
-              <Form.Control type="text" value={fornitura.telefono} onChange={handleChange} />
+          <Row>
+            <Form.Group as={Col} xs={3} className="mb-3" controlId="cap">
+              <Form.Label>Cap</Form.Label>
+              <Form.Control type="text" value={fornitura.cap} onChange={handleChange} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>email</Form.Label>
-              <Form.Control type="text" value={fornitura.email} onChange={handleChange} />
+            <Form.Group as={Col} xs={3} className="mb-3" controlId="provincia">
+              <Form.Label>Provincia</Form.Label>
+              <Form.Control type="text" value={fornitura.provincia} onChange={handleChange} />
             </Form.Group>
-            <Button variant="primary" type="submit">
-              {modFornituraId ? "Aggiorna" : "Aggiungi"}
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </>
+            <Form.Group as={Col} className="mb-3" controlId="comune">
+              <Form.Label>Comune</Form.Label>
+              <Form.Control type="text" value={fornitura.comune} onChange={handleChange} />
+            </Form.Group>
+          </Row>
+
+          <Row>
+            <Form.Group as={Col} className="mb-3" controlId="bta">
+              <Form.Label>BTA</Form.Label>
+              <Form.Select onChange={handleChange} value={fornitura.bta}>
+                <option value="TD">TD</option>
+                <option value="BTA">BTA</option>
+                <option value="BTA1">BTA1</option>
+                <option value="BTA2">BTA2</option>
+                <option value="BTA3">BTA3</option>
+                <option value="BTA4">BTA4</option>
+                <option value="BTA5">BTA5</option>
+                <option value="BTA6">BTA6</option>
+                <option value="BTA6C">BTA6C</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="tipoPrelievo">
+              <Form.Label>Tipo prelievo</Form.Label>
+              <Form.Select onChange={handleChange} value={fornitura.tipoPrelievo}>
+                <option value="BT">BT</option>
+                <option value="MT">MT</option>
+                <option value="AT">AT</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="tipoContatore">
+              <Form.Label>Tipo contatore</Form.Label>
+              <Form.Select onChange={handleChange} value={fornitura.tipoContatore}>
+                <option value="ORARIO">Orario</option>
+                <option value="FASCIA">Fascia</option>
+                <option value="MONORARIO">Monorario</option>
+              </Form.Select>
+            </Form.Group>
+          </Row>
+
+          <Row>
+            <Form.Group as={Col} className="mb-3" controlId="codiceDistributore">
+              <Form.Label>Distributore</Form.Label>
+              <Form.Select onChange={handleChange} value={fornitura.codiceDistributore}>
+                <option value="EDIST">E-Distribuzione S.p.a (ENELD)</option>
+                <option value="A2A">A2A Reti Elettriche S.p.A. (AEMMILANO)</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="fornitore">
+              <Form.Label>Fornitore</Form.Label>
+              <Form.Control type="text" value={fornitura.fornitore} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="fatturazione">
+              <Form.Label>Fatturazione</Form.Label>
+              <Form.Select onChange={handleChange} value={fornitura.fatturazione}>
+                <option value="MENSILE">Mensile</option>
+                <option value="BIMESTRALE">Bimestrale</option>
+              </Form.Select>
+            </Form.Group>
+          </Row>
+
+          <Row>
+            <Form.Group as={Col} className="mb-3" controlId="potenzaDisponibile">
+              <Form.Label>Potenza disponibile</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                value={fornitura.potenzaDisponibile}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="potenzaImpegnata">
+              <Form.Label>Potenza impegnata</Form.Label>
+              <Form.Control type="number" step="0.01" value={fornitura.potenzaImpegnata} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="iva">
+              <Form.Label>IVA</Form.Label>
+              <Form.Control type="number" step="0.01" value={fornitura.iva} onChange={handleChange} />
+            </Form.Group>
+          </Row>
+
+          <Row>
+            <Form.Group as={Col} className="mb-3" controlId="dataSwitch">
+              <Form.Label>Data switch</Form.Label>
+              <Form.Control type="date" value={fornitura.dataSwitch} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="dataSwitchOut">
+              <Form.Label>Data switch out</Form.Label>
+              <Form.Control type="date" value={fornitura.dataSwitchOut} onChange={handleChange} />
+            </Form.Group>
+          </Row>
+
+          <Button variant="primary" type="submit">
+            {modFornituraId ? "Aggiorna" : "Aggiungi"}
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 
