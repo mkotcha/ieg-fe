@@ -40,16 +40,12 @@ const Oneri = () => {
   const [dispacciamentoRowData, setDispacciamentoRowData] = useState<Dispacciamento[]>([]);
   const [dispacciamentoColDefs] = useState<ColDef<Dispacciamento>[]>([
     { cellRenderer: DispacciamentoMod },
-    { field: "trimestre", headerName: "Trimestre", type: "numericColumn", filter: true },
+    { field: "mese", headerName: "Mese", type: "numericColumn", filter: true },
     { field: "anno", headerName: "Anno", type: "numericColumn", filter: true },
     { field: "capacita", headerName: "Capacità", type: "numericColumn" },
-    { field: "eolico", headerName: "Eolico", type: "numericColumn" },
     { field: "costoAm", headerName: "CostoAm", type: "numericColumn" },
     { field: "dis", headerName: "DIS", type: "numericColumn" },
-    { field: "int73", headerName: "Int73", type: "numericColumn" },
-    { field: "msd", headerName: "MSD", type: "numericColumn" },
-    { field: "sicurezza", headerName: "Sicurezza", type: "numericColumn" },
-    { field: "trasmissione", headerName: "Trasmissione", type: "numericColumn" },
+    { field: "sbilanciamento", headerName: "Sbilanciamento", type: "numericColumn" },
   ]);
 
   const autoSizeStrategy = {

@@ -12,16 +12,12 @@ const AddDispacciamentoModal = () => {
   const dispatch = useAppDispatch();
 
   const [dispacciamento, setDispacciamento] = useState<Record<string, string | number>>({
-    trimestre: 0,
+    mese: 0,
     anno: 0,
     capacita: 0,
-    eolico: 0,
     costoAm: 0,
     dis: 0,
-    int73: 0,
-    msd: 0,
-    sicurezza: 0,
-    trasmissione: 0,
+    sbilanciamento: 0,
   });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,10 +28,18 @@ const AddDispacciamentoModal = () => {
 
   const handlePost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const payload = {
+      mese: Number(dispacciamento.mese),
+      anno: Number(dispacciamento.anno),
+      capacita: Number(dispacciamento.capacita),
+      costoAm: Number(dispacciamento.costoAm),
+      dis: Number(dispacciamento.dis),
+      sbilanciamento: Number(dispacciamento.sbilanciamento),
+    };
     const urlApi = `${import.meta.env.VITE_REACT_APP_API_URL}/dispacciamento`;
     if (modDispacciamentoId) {
       const url = urlApi + "/" + modDispacciamentoId;
-      const response = await axios.put(url, dispacciamento, {
+      const response = await axios.put(url, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log(response);
@@ -44,7 +48,7 @@ const AddDispacciamentoModal = () => {
       }
     } else {
       const url = urlApi;
-      const response = await axios.post(url, dispacciamento, {
+      const response = await axios.post(url, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log(response);
@@ -55,7 +59,14 @@ const AddDispacciamentoModal = () => {
   };
 
   const resetDispacciamento = () => {
-    setDispacciamento({});
+    setDispacciamento({
+      mese: 0,
+      anno: 0,
+      capacita: 0,
+      costoAm: 0,
+      dis: 0,
+      sbilanciamento: 0,
+    });
   };
 
   useEffect(() => {
@@ -64,7 +75,15 @@ const AddDispacciamentoModal = () => {
       const response = await axios.get<Dispacciamento>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDispacciamento(response.data as unknown as Record<string, string | number>);
+      const data = response.data;
+      setDispacciamento({
+        mese: data.mese ?? 0,
+        anno: data.anno ?? 0,
+        capacita: data.capacita ?? 0,
+        costoAm: data.costoAm ?? 0,
+        dis: data.dis ?? 0,
+        sbilanciamento: data.sbilanciamento ?? 0,
+      });
     };
 
     if (modDispacciamentoId) fetchDispacciamento();
@@ -78,9 +97,9 @@ const AddDispacciamentoModal = () => {
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={handlePost}>
-          <Form.Group controlId="trimestre" className="mb-3">
-            <Form.Label>Trimestre</Form.Label>
-            <Form.Control type="number" value={dispacciamento.trimestre} onChange={handleChange} />
+          <Form.Group controlId="mese" className="mb-3">
+            <Form.Label>Mese</Form.Label>
+            <Form.Control type="number" value={dispacciamento.mese} onChange={handleChange} />
           </Form.Group>
           <Form.Group controlId="anno" className="mb-3">
             <Form.Label>Anno</Form.Label>
@@ -90,10 +109,6 @@ const AddDispacciamentoModal = () => {
             <Form.Label>Capacità</Form.Label>
             <Form.Control type="number" step="0.000001" value={dispacciamento.capacita} onChange={handleChange} />
           </Form.Group>
-          <Form.Group controlId="eolico" className="mb-3">
-            <Form.Label>Eolico</Form.Label>
-            <Form.Control type="number" step="0.000001" value={dispacciamento.eolico} onChange={handleChange} />
-          </Form.Group>
           <Form.Group controlId="costoAm" className="mb-3">
             <Form.Label>Costo AM</Form.Label>
             <Form.Control type="number" step="0.000001" value={dispacciamento.costoAm} onChange={handleChange} />
@@ -102,21 +117,14 @@ const AddDispacciamentoModal = () => {
             <Form.Label>DIS</Form.Label>
             <Form.Control type="number" step="0.000001" value={dispacciamento.dis} onChange={handleChange} />
           </Form.Group>
-          <Form.Group controlId="int73" className="mb-3">
-            <Form.Label>INT73</Form.Label>
-            <Form.Control type="number" step="0.000001" value={dispacciamento.int73} onChange={handleChange} />
-          </Form.Group>
-          <Form.Group controlId="msd" className="mb-3">
-            <Form.Label>MSD</Form.Label>
-            <Form.Control type="number" step="0.000001" value={dispacciamento.msd} onChange={handleChange} />
-          </Form.Group>
-          <Form.Group controlId="sicurezza" className="mb-3">
-            <Form.Label>Sicurezza</Form.Label>
-            <Form.Control type="number" step="0.000001" value={dispacciamento.sicurezza} onChange={handleChange} />
-          </Form.Group>
-          <Form.Group controlId="trasmissione" className="mb-3">
-            <Form.Label>Trasmissione</Form.Label>
-            <Form.Control type="number" step="0.000001" value={dispacciamento.trasmissione} onChange={handleChange} />
+          <Form.Group controlId="sbilanciamento" className="mb-3">
+            <Form.Label>Sbilanciamento</Form.Label>
+            <Form.Control
+              type="number"
+              step="0.000001"
+              value={dispacciamento.sbilanciamento}
+              onChange={handleChange}
+            />
           </Form.Group>
           <Button variant="primary" type="submit">
             {modDispacciamentoId ? "Modifica" : "Aggiungi"}

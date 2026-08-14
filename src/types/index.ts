@@ -84,16 +84,12 @@ export interface Oneri {
 
 export interface Dispacciamento {
   id: number;
-  trimestre: number;
-  anno: number;
-  capacita: number;
-  eolico: number;
   costoAm: number;
   dis: number;
-  int73: number;
-  msd: number;
-  sicurezza: number;
-  trasmissione: number;
+  capacita: number;
+  sbilanciamento: number;
+  mese: number;
+  anno: number;
 }
 
 /** Importi restituiti dal backend come stringa (vedi parseFloat in FatturaNumero/Cliente). */
