@@ -26,6 +26,7 @@ export const SHOW_DELETE_CLIENTE_MODAL = "SHOW_DELETE_CLIENTE_MODAL";
 export const HIDE_DELETE_CLIENTE_MODAL = "HIDE_DELETE_CLIENTE_MODAL";
 export const SHOW_ADD_FORNITURA_MODAL = "SHOW_ADD_FORNITURA_MODAL";
 export const HIDE_ADD_FORNITURA_MODAL = "HIDE_ADD_FORNITURA_MODAL";
+export const SHOW_NUOVA_FORNITURA_CLIENTE_MODAL = "SHOW_NUOVA_FORNITURA_CLIENTE_MODAL";
 export const SHOW_DELETE_FORNITURA_MODAL = "SHOW_DELETE_FORNITURA_MODAL";
 export const HIDE_DELETE_FORNITURA_MODAL = "HIDE_DELETE_FORNITURA_MODAL";
 export const SHOW_ADD_OFFERTA_MODAL = "SHOW_ADD_OFFERTA_MODAL";
@@ -66,6 +67,11 @@ export const showDeleteClienteModalAction = (id?: number) => ({ type: SHOW_DELET
 export const hideDeleteClienteModalAction = () => ({ type: HIDE_DELETE_CLIENTE_MODAL });
 export const showAddFornituraModalAction = (id?: string) => ({ type: SHOW_ADD_FORNITURA_MODAL, payload: id });
 export const hideAddFornituraModalAction = () => ({ type: HIDE_ADD_FORNITURA_MODAL });
+/** Nuova fornitura con il cliente già selezionato. */
+export const showNuovaFornituraClienteModalAction = (clienteId: number) => ({
+  type: SHOW_NUOVA_FORNITURA_CLIENTE_MODAL,
+  payload: clienteId,
+});
 export const showDeleteFornituraModalAction = (id?: string) => ({ type: SHOW_DELETE_FORNITURA_MODAL, payload: id });
 export const hideDeleteFornituraModalAction = () => ({ type: HIDE_DELETE_FORNITURA_MODAL });
 export const showAddOffertaModalAction = (id?: number) => ({ type: SHOW_ADD_OFFERTA_MODAL, payload: id });

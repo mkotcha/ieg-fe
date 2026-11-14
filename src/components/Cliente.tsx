@@ -11,7 +11,8 @@ import FornituraOfferta from "./cellComponents/FornituraOfferta";
 import { useNavigate } from "react-router-dom";
 import ClienteTipo from "./cellComponents/ClienteTipo";
 import FornituraPod from "./cellComponents/FornituraPod";
-import { useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { showNuovaFornituraClienteModalAction } from "../redux/actions";
 import type { Cliente as ClienteType, Fattura, Fornitura, VoceFatturaSingola } from "../types";
 import { NOMI_MESI } from "../utils/formato";
 
@@ -20,6 +21,7 @@ const Cliente = () => {
   const [cliente, setCliente] = useState<Partial<ClienteType>>({});
   const token = useAppSelector(state => state.auth.token);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const currentMonth = new Date().getMonth();
   const [mese, setMese] = useState<number | string>(currentMonth === 0 ? 12 : currentMonth);
   const [anno, setAnno] = useState<number | string>(
@@ -303,7 +305,17 @@ const Cliente = () => {
         </div>
 
         <div className="border rounded-3 bg-body-tertiary mb-3">
-          <h3 className="m-2">Forniture</h3>
+          <div className="d-flex align-items-center">
+            <h3 className="m-2 me-auto">Forniture</h3>
+            <Button
+              variant="primary"
+              size="sm"
+              className="mx-3"
+              disabled={!cliente.id}
+              onClick={() => cliente.id && dispatch(showNuovaFornituraClienteModalAction(cliente.id))}>
+              <i className="bi bi-plus-lg me-1"></i>aggiungi fornitura
+            </Button>
+          </div>
           <div className="ag-theme-quartz-dark ">
             <AgGridReact
               rowData={rowDataForniture}

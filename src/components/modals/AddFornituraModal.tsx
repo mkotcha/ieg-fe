@@ -9,6 +9,7 @@ import type { Cliente, Fornitura, PagedResponse } from "../../types";
 const AddFornituraModal = () => {
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const modFornituraId = useAppSelector(state => state.modal.modFornituraId);
+  const nuovaFornituraClienteId = useAppSelector(state => state.modal.nuovaFornituraClienteId);
   const token = useAppSelector(state => state.auth.token);
   const dispatch = useAppDispatch();
   const [listaClienti, setListaClienti] = useState<Cliente[]>([]);
@@ -132,8 +133,13 @@ const AddFornituraModal = () => {
       fetchFornitura();
     } else {
       resetFornitura();
+      // aperto dalla pagina di un cliente: cliente già selezionato
+      if (nuovaFornituraClienteId) {
+        setFornitura(prevState => ({ ...prevState, idCliente: String(nuovaFornituraClienteId) }));
+      }
     }
-  }, [modFornituraId, token]);
+    // a ogni apertura: senza showAddFornituraModal una seconda nuova fornitura ritroverebbe i dati della prima
+  }, [modFornituraId, nuovaFornituraClienteId, showAddFornituraModal, token]);
 
   return (
     <Modal
@@ -144,7 +150,11 @@ const AddFornituraModal = () => {
       }}
       aria-labelledby="example-modal-sizes-title-lg">
       <Modal.Header closeButton>
-        <Modal.Title>{modFornituraId ? "Modifica fornitura" : "Aggiungi Fornitura"}</Modal.Title>
+        <Modal.Title>
+          {modFornituraId
+            ? "Modifica fornitura"
+            : `Aggiungi fornitura${nuovaFornituraClienteId ? ` - ${listaClienti.find(c => c.id === nuovaFornituraClienteId)?.ragioneSociale ?? ""}` : ""}`}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handlePost}>

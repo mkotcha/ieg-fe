@@ -8,13 +8,13 @@ import { useAppSelector } from "../redux/hooks";
 import ConfrontoFornitore from "./ConfrontoFornitore";
 import AvanzamentoLavoro from "./AvanzamentoLavoro";
 import { useLavoro } from "../hooks/useLavoro";
-import type { Cliente, EsitoFattura, Fattura, Fornitura, LetturaMancante, PagedResponse } from "../types";
+import type { Cliente, EsitoFattura, Fattura, Fornitura, PagedResponse } from "../types";
+import VerificaLetture from "./VerificaLetture";
 
 const HomePage = () => {
   const [clienti, setClienti] = useState<Cliente[] | null>(null);
   const [forniture, setForniture] = useState<Fornitura[] | null>(null);
   const [fatture, setFatture] = useState<Fattura[] | null>(null);
-  const [lettureMancanti, setLettureMancanti] = useState<LetturaMancante[]>([]);
   // generazione in background: esiti per cliente nel risultato del lavoro completato
   const generazione = useLavoro<EsitoFattura[]>("GENERAZIONE_FATTURE");
   const esiti = generazione.lavoro?.stato === "COMPLETATO" ? generazione.lavoro.risultato : null;
@@ -53,22 +53,6 @@ const HomePage = () => {
     if (forniture === null) fetchForniture();
     if (fatture === null) fetchFatture();
   }, [clienti, fatture, forniture, token]);
-
-  const checkLetture = async () => {
-    setLettureMancanti([]);
-    if (forniture) {
-      for (const fornitura of forniture) {
-        const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture/conta/${fornitura.id}?mese=${mese}&anno=${anno}`;
-        const response = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const num = parseInt(response.data, 10);
-        if (num < 2) {
-          setLettureMancanti(prevState => [...prevState, { id: fornitura.id, num: num }]);
-        }
-      }
-    }
-  };
 
   const generaFatture = async () => {
     if (!window.confirm(`Generare le fatture di ${mese}/${anno} per tutti i clienti attivi?`)) return;
@@ -206,20 +190,7 @@ const HomePage = () => {
                 </Table>
               </div>
             )}
-            <div>
-              pod con letture mancanti:
-              <Button onClick={checkLetture} size="sm" variant="warning" className="mx-2">
-                verifica
-              </Button>
-              {lettureMancanti.length}{" "}
-            </div>
-            <div>
-              {lettureMancanti.map(pod => (
-                <div key={pod.id} className="font-monospace">
-                  <Link to={`/letture/${pod.id}`}>{pod.id}</Link> - {pod.num}
-                </div>
-              ))}
-            </div>
+            <VerificaLetture mese={Number(mese)} anno={Number(anno)} />
           </div>
         </div>
       </div>

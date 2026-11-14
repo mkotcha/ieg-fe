@@ -207,9 +207,23 @@ export interface AltraPartita {
   anno: number;
 }
 
-export interface LetturaMancante {
-  id: string;
-  num: number;
+/** GET /letture/verifica: letture di una fornitura nel periodo della fattura del mese. */
+export interface VerificaLetture {
+  pod: string;
+  clienteId: number;
+  ragioneSociale: string;
+  /** inizio del periodo della fattura, vedi origineInizio */
+  dal: string;
+  /** ultimo giorno del mese */
+  al: string;
+  origineInizio: "FATTURA_PRECEDENTE" | "LETTURA_SWITCH" | "FINE_MESE_PRECEDENTE";
+  letture: number;
+  primaLettura: string | null;
+  ultimaLettura: string | null;
+  tipoUltimaLettura: TipoLettura | null;
+  /** almeno due letture: la fattura si può calcolare */
+  fatturabile: boolean;
+  problemi: string[];
 }
 
 /** Page di Spring Data: totalElements è in radice (serializzazione PageImpl) o in page (VIA_DTO). */
