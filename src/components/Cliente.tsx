@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import ClienteTipo from "./cellComponents/ClienteTipo";
 import FornituraPod from "./cellComponents/FornituraPod";
 import { useAppSelector } from "../redux/hooks";
-import type { Cliente as ClienteType, Fattura, Fornitura } from "../types";
+import type { Cliente as ClienteType, Fattura, Fornitura, VoceFatturaSingola } from "../types";
 
 const Cliente = () => {
   const { id } = useParams();
@@ -65,6 +65,42 @@ const Cliente = () => {
     const number = parseFloat(params.value ?? "");
     return isNaN(number) ? "" : number.toFixed(2);
   };
+  const formatEuro = (n: number | null | undefined) =>
+    n === null || n === undefined || isNaN(n)
+      ? ""
+      : n.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const [fatturaSelezionata, setFatturaSelezionata] = useState<Fattura | null>(null);
+  const [colDefsVoci] = useState<ColDef<VoceFatturaSingola>[]>([
+    { field: "sezione", filter: true },
+    { field: "descrizione", filter: true },
+    { field: "dal" },
+    { field: "al" },
+    { field: "unita", headerName: "Unità" },
+    {
+      field: "unitario",
+      valueFormatter: p => (p.value == null ? "" : p.value.toLocaleString("it-IT", { maximumFractionDigits: 6 })),
+      type: "rightAligned",
+    },
+    {
+      field: "quantita",
+      headerName: "Quantità",
+      valueFormatter: p => (p.value == null ? "" : p.value.toLocaleString("it-IT", { maximumFractionDigits: 3 })),
+      type: "rightAligned",
+    },
+    { field: "importo", valueFormatter: p => formatEuro(p.value), type: "rightAligned" },
+    {
+      field: "iva",
+      headerName: "IVA",
+      // le altre partite esenti iva arrivano con iva 0
+      valueFormatter: p =>
+        p.data?.sezione === "ALTRE_PARTITE" && !p.value
+          ? "esente"
+          : p.value == null
+            ? ""
+            : `${(p.value * 100).toLocaleString("it-IT")}%`,
+      type: "rightAligned",
+    },
+  ]);
   const [colDefsFatture] = useState<ColDef<Fattura>[]>([
     {
       field: "numeroFattura",
@@ -81,6 +117,17 @@ const Cliente = () => {
       field: "totaleImponibile",
       headerName: "Imponibile",
       valueFormatter: formatImporto,
+      type: "rightAligned",
+    },
+    {
+      colId: "totaleDaPagare",
+      headerName: "Totale da pagare",
+      // imponibile + iva + altre partite esenti iva, sommato sulle forniture
+      valueGetter: p =>
+        p.data?.fattureSingole?.length
+          ? p.data.fattureSingole.reduce((acc, fs) => acc + (fs.totaleDaPagare ?? 0), 0)
+          : null,
+      valueFormatter: p => formatEuro(p.value as number | null),
       type: "rightAligned",
     },
     {
@@ -167,6 +214,7 @@ const Cliente = () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (response.status === 200) {
+      setFatturaSelezionata(null);
       fetchFatture();
     }
   };
@@ -250,9 +298,40 @@ const Cliente = () => {
               autoSizeStrategy={autoSizeStrategy}
               domLayout={`autoHeight`}
               enableCellTextSelection={true}
+              rowSelection="single"
+              onRowClicked={e => setFatturaSelezionata(e.data ?? null)}
             />
           </div>
         </div>
+        {fatturaSelezionata && (
+          <div className="border rounded-3 bg-body-tertiary my-3">
+            <div className="d-flex align-items-center">
+              <h3 className="m-2">Dettaglio fattura {fatturaSelezionata.numeroFattura}</h3>
+              <Button variant="secondary" size="sm" className="ms-auto mx-3" onClick={() => setFatturaSelezionata(null)}>
+                Chiudi
+              </Button>
+            </div>
+            {fatturaSelezionata.fattureSingole?.map(fs => (
+              <div key={fs.id} className="mb-3">
+                <div className="mx-2 mb-1">
+                  <span className="font-monospace me-3">{fs.fornitura?.id}</span>
+                  imponibile {formatEuro(fs.totaleImponibile)} € · iva {formatEuro(fs.totaleIva)} €
+                  {fs.totalePartite ? <> · altre partite {formatEuro(fs.totalePartite)} €</> : null} ·{" "}
+                  <strong>totale da pagare {formatEuro(fs.totaleDaPagare)} €</strong>
+                </div>
+                <div className="ag-theme-quartz-dark">
+                  <AgGridReact
+                    rowData={fs.voci}
+                    columnDefs={colDefsVoci}
+                    autoSizeStrategy={autoSizeStrategy}
+                    domLayout={`autoHeight`}
+                    enableCellTextSelection={true}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Container>
     </>
   );

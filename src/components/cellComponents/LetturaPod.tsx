@@ -10,7 +10,7 @@ const LetturaPod = (params: ICellRendererParams<Lettura>) => {
   return (
     <div className="d-flex ">
       <div className="me-auto ">
-        <Link to={`/cliente/${params.data?.fornitura?.cliente?.id}`} className="text-decoration-none text-reset">
+        <Link to={`/fornitura/${params.data?.fornitura?.id}`} className="text-decoration-none text-reset">
           {params.data?.fornitura?.id}
         </Link>
       </div>

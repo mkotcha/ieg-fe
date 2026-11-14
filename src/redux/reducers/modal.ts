@@ -21,6 +21,14 @@ import {
   HIDE_ADD_FORNITURA_MODAL,
   SHOW_DELETE_FORNITURA_MODAL,
   HIDE_DELETE_FORNITURA_MODAL,
+  SHOW_ADD_OFFERTA_MODAL,
+  HIDE_ADD_OFFERTA_MODAL,
+  SHOW_DELETE_OFFERTA_MODAL,
+  HIDE_DELETE_OFFERTA_MODAL,
+  SHOW_ADD_ALTRA_PARTITA_MODAL,
+  HIDE_ADD_ALTRA_PARTITA_MODAL,
+  SHOW_DELETE_ALTRA_PARTITA_MODAL,
+  HIDE_DELETE_ALTRA_PARTITA_MODAL,
 } from "../actions";
 
 export interface ModalState {
@@ -45,6 +53,14 @@ export interface ModalState {
   modFornituraId: string | null;
   showDeleteFornituraModal: boolean;
   deleteFornituraId: string | null;
+  showAddOffertaModal: boolean;
+  modOffertaId: number | null;
+  showDeleteOffertaModal: boolean;
+  deleteOffertaId: number | null;
+  showAddAltraPartitaModal: boolean;
+  modAltraPartitaId: number | null;
+  showDeleteAltraPartitaModal: boolean;
+  deleteAltraPartitaId: number | null;
 }
 
 interface ModalAction {
@@ -74,6 +90,14 @@ const initialState: ModalState = {
   modFornituraId: null,
   showDeleteFornituraModal: false,
   deleteFornituraId: null,
+  showAddOffertaModal: false,
+  modOffertaId: null,
+  showDeleteOffertaModal: false,
+  deleteOffertaId: null,
+  showAddAltraPartitaModal: false,
+  modAltraPartitaId: null,
+  showDeleteAltraPartitaModal: false,
+  deleteAltraPartitaId: null,
 };
 
 const modalReducer = (state = initialState, action: ModalAction): ModalState => {
@@ -208,6 +232,54 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         ...state,
         showDeleteFornituraModal: false,
         deleteFornituraId: null,
+      };
+    case SHOW_ADD_OFFERTA_MODAL:
+      return {
+        ...state,
+        showAddOffertaModal: true,
+        modOffertaId: action.payload as number,
+      };
+    case HIDE_ADD_OFFERTA_MODAL:
+      return {
+        ...state,
+        showAddOffertaModal: false,
+        modOffertaId: null,
+      };
+    case SHOW_DELETE_OFFERTA_MODAL:
+      return {
+        ...state,
+        showDeleteOffertaModal: true,
+        deleteOffertaId: action.payload as number,
+      };
+    case HIDE_DELETE_OFFERTA_MODAL:
+      return {
+        ...state,
+        showDeleteOffertaModal: false,
+        deleteOffertaId: null,
+      };
+    case SHOW_ADD_ALTRA_PARTITA_MODAL:
+      return {
+        ...state,
+        showAddAltraPartitaModal: true,
+        modAltraPartitaId: action.payload as number,
+      };
+    case HIDE_ADD_ALTRA_PARTITA_MODAL:
+      return {
+        ...state,
+        showAddAltraPartitaModal: false,
+        modAltraPartitaId: null,
+      };
+    case SHOW_DELETE_ALTRA_PARTITA_MODAL:
+      return {
+        ...state,
+        showDeleteAltraPartitaModal: true,
+        deleteAltraPartitaId: action.payload as number,
+      };
+    case HIDE_DELETE_ALTRA_PARTITA_MODAL:
+      return {
+        ...state,
+        showDeleteAltraPartitaModal: false,
+        deleteAltraPartitaId: null,
       };
 
     default:

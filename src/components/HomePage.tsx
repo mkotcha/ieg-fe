@@ -1,17 +1,20 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Alert, Button, Container, Form, Spinner, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
-import type { Cliente, Fattura, Fornitura, LetturaMancante, PagedResponse } from "../types";
+import type { Cliente, EsitoFattura, Fattura, Fornitura, LetturaMancante, PagedResponse } from "../types";
 
 const HomePage = () => {
   const [clienti, setClienti] = useState<Cliente[] | null>(null);
   const [forniture, setForniture] = useState<Fornitura[] | null>(null);
   const [fatture, setFatture] = useState<Fattura[] | null>(null);
   const [lettureMancanti, setLettureMancanti] = useState<LetturaMancante[]>([]);
+  const [esiti, setEsiti] = useState<EsitoFattura[] | null>(null);
+  const [generazione, setGenerazione] = useState(false);
+  const [erroreGenerazione, setErroreGenerazione] = useState<string | null>(null);
   const currentMonth = new Date().getMonth();
   const [mese, setMese] = useState<number | string>(currentMonth === 0 ? 12 : currentMonth);
   const [anno, setAnno] = useState<number | string>(
@@ -21,26 +24,26 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchClienti = async () => {
-      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti?size=50`;
-      const response = await axios.get<PagedResponse<Cliente>>(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setClienti(response.data.content);
+    // scarica tutti gli elementi di un endpoint paginato: se la prima pagina non li contiene tutti,
+    // li richiede di nuovo con size = totalElements
+    const fetchTutti = async <T,>(path: string): Promise<T[]> => {
+      const get = (size: number) =>
+        axios.get<PagedResponse<T>>(`${import.meta.env.VITE_REACT_APP_API_URL}/${path}?size=${size}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      const response = await get(500);
+      const totale = response.data.totalElements ?? response.data.page?.totalElements ?? response.data.content.length;
+      if (totale <= response.data.content.length) return response.data.content;
+      return (await get(totale)).data.content;
     };
-    const fetchForniture = async () => {
-      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture?size=50`;
-      const response = await axios.get<PagedResponse<Fornitura>>(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setForniture(response.data.content);
-    };
+    const fetchClienti = async () => setClienti(await fetchTutti<Cliente>("clienti"));
+    const fetchForniture = async () => setForniture(await fetchTutti<Fornitura>("forniture"));
     const fetchFatture = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture`;
-      const response = await axios.get<PagedResponse<Fattura>>(url, {
+      const response = await axios.get<Fattura[]>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFatture(response.data.content);
+      setFatture(response.data);
     };
 
     if (clienti === null) fetchClienti();
@@ -64,6 +67,41 @@ const HomePage = () => {
     }
   };
 
+  const generaFatture = async () => {
+    if (!window.confirm(`Generare le fatture di ${mese}/${anno} per tutti i clienti attivi?`)) return;
+    setGenerazione(true);
+    setErroreGenerazione(null);
+    setEsiti(null);
+    try {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture/genera?mese=${mese}&anno=${anno}`;
+      const response = await axios.post<EsitoFattura[]>(url, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEsiti(response.data);
+      setFatture(null); // ricarica il conteggio delle fatture emesse
+    } catch (error) {
+      setErroreGenerazione(
+        axios.isAxiosError(error) && error.response?.status === 403
+          ? "Operazione riservata agli amministratori"
+          : "Errore durante la generazione delle fatture"
+      );
+    } finally {
+      setGenerazione(false);
+    }
+  };
+
+  const formatEuro = (n: number | null) =>
+    n === null ? "" : n.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const fattureDelPeriodo = fatture?.filter(f => f.mese === Number(mese) && f.anno === Number(anno));
+  // stesso criterio della generazione massiva: cliente attivo e con almeno una fornitura
+  const clientiConForniture = new Set(forniture?.map(f => f.cliente?.id));
+  const clientiAttivi = clienti?.filter(c => c.active && clientiConForniture.has(c.id));
+  // forniture che la generazione massiva fattura: tutte quelle dei clienti attivi
+  const idClientiAttivi = new Set(clientiAttivi?.map(c => c.id));
+  const fornitureAttive = forniture?.filter(f => idClientiAttivi.has(f.cliente?.id));
+  const esitiOk = esiti?.filter(e => !e.errore) ?? [];
+
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -80,10 +118,14 @@ const HomePage = () => {
         </div>
         <div className="p-2">
           <div>
-            <div>totale clienti: {clienti?.length}</div>
+            <div>
+              totale clienti: {clienti?.length} (attivi: {forniture ? clientiAttivi?.length : ""})
+            </div>
           </div>
           <div>
-            <div>totale forniture: {forniture?.length}</div>
+            <div>
+              totale forniture: {forniture?.length} (attive: {clienti ? fornitureAttive?.length : ""})
+            </div>
           </div>
           <div>
             <div className="d-flex align-items-center">
@@ -118,8 +160,54 @@ const HomePage = () => {
               </Form.Select>
             </div>
             <div>
-              totale fatture emesse: {fatture?.length} / {clienti?.length}
+              totale fatture emesse nel periodo: {fattureDelPeriodo?.length} / {forniture ? clientiAttivi?.length : ""}
+              <Button onClick={generaFatture} size="sm" variant="primary" className="mx-2" disabled={generazione}>
+                {generazione ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-1" /> generazione in corso...
+                  </>
+                ) : (
+                  "genera fatture"
+                )}
+              </Button>
             </div>
+            {erroreGenerazione && (
+              <Alert variant="danger" className="my-2 py-2">
+                {erroreGenerazione}
+              </Alert>
+            )}
+            {esiti && (
+              <div className="my-2">
+                <div>
+                  fatture generate: {esitiOk.length} / {esiti.length} - totale da pagare:{" "}
+                  {formatEuro(esitiOk.reduce((acc, e) => acc + (e.totale ?? 0), 0))} €
+                </div>
+                <Table size="sm" striped bordered className="mt-2 w-auto">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Numero fattura</th>
+                      <th className="text-end">Totale da pagare</th>
+                      <th className="text-end">ms</th>
+                      <th>Esito</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {esiti.map(e => (
+                      <tr key={e.clienteId}>
+                        <td>
+                          <Link to={`/cliente/${e.clienteId}`}>{e.ragioneSociale}</Link>
+                        </td>
+                        <td className="font-monospace">{e.numeroFattura}</td>
+                        <td className="text-end">{formatEuro(e.totale)}</td>
+                        <td className="text-end">{e.millisecondi.toLocaleString("it-IT")}</td>
+                        <td className={e.errore ? "text-danger" : "text-success"}>{e.errore ?? "OK"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            )}
             <div>
               pod con letture mancanti:
               <Button onClick={checkLetture} size="sm" variant="warning" className="mx-2">

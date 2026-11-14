@@ -1,9 +1,9 @@
 import { Button, Container } from "react-bootstrap";
-import type { ColDef } from "ag-grid-community";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import axios from "axios";
 import { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import FornituraPod from "./cellComponents/FornituraPod";
 import { showAddFornituraModalAction } from "../redux/actions";
@@ -24,7 +24,14 @@ const Forniture = () => {
       cellRenderer: FornituraPod,
       filter: true,
     },
-    { field: "cliente.ragioneSociale", headerName: "Ragione sociale" },
+    {
+      field: "cliente.ragioneSociale",
+      headerName: "Ragione sociale",
+      filter: true,
+      cellRenderer: (p: ICellRendererParams<Fornitura, string>) => (
+        <Link to={`/cliente/${p.data?.cliente?.id}`} className="text-decoration-none text-reset">{p.value}</Link>
+      ),
+    },
     { field: "indirizzo" },
     { field: "comune" },
     { field: "provincia" },

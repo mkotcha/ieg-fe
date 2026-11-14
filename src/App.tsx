@@ -22,6 +22,12 @@ import AddClienteModal from "./components/modals/AddClienteModal";
 import DeleteClienteModal from "./components/modals/DeleteClienteModal";
 import DeleteFornituraModal from "./components/modals/DeleteFornituraModal";
 import AddFornituraModal from "./components/modals/AddFornituraModal";
+import Offerte from "./components/Offerte";
+import AltrePartite from "./components/AltrePartite";
+import AddOffertaModal from "./components/modals/AddOffertaModal";
+import DeleteOffertaModal from "./components/modals/DeleteOffertaModal";
+import AddAltraPartitaModal from "./components/modals/AddAltraPartitaModal";
+import DeleteAltraPartitaModal from "./components/modals/DeleteAltraPartitaModal";
 
 function App() {
   return (
@@ -41,6 +47,8 @@ function App() {
         <Route path="/letture/" element={<Letture />} />
         <Route path="/letture/:pod" element={<Letture />} />
         <Route path="/oneri" element={<Oneri />} />
+        <Route path="/offerte" element={<Offerte />} />
+        <Route path="/altre-partite" element={<AltrePartite />} />
       </Routes>
       <BottomBar />
       <UploadFlussiModal />
@@ -54,6 +62,10 @@ function App() {
       <AddFornituraModal />
       <DeleteClienteModal />
       <DeleteFornituraModal />
+      <AddOffertaModal />
+      <DeleteOffertaModal />
+      <AddAltraPartitaModal />
+      <DeleteAltraPartitaModal />
     </BrowserRouter>
   );
 }

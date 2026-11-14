@@ -28,6 +28,14 @@ export const SHOW_ADD_FORNITURA_MODAL = "SHOW_ADD_FORNITURA_MODAL";
 export const HIDE_ADD_FORNITURA_MODAL = "HIDE_ADD_FORNITURA_MODAL";
 export const SHOW_DELETE_FORNITURA_MODAL = "SHOW_DELETE_FORNITURA_MODAL";
 export const HIDE_DELETE_FORNITURA_MODAL = "HIDE_DELETE_FORNITURA_MODAL";
+export const SHOW_ADD_OFFERTA_MODAL = "SHOW_ADD_OFFERTA_MODAL";
+export const HIDE_ADD_OFFERTA_MODAL = "HIDE_ADD_OFFERTA_MODAL";
+export const SHOW_DELETE_OFFERTA_MODAL = "SHOW_DELETE_OFFERTA_MODAL";
+export const HIDE_DELETE_OFFERTA_MODAL = "HIDE_DELETE_OFFERTA_MODAL";
+export const SHOW_ADD_ALTRA_PARTITA_MODAL = "SHOW_ADD_ALTRA_PARTITA_MODAL";
+export const HIDE_ADD_ALTRA_PARTITA_MODAL = "HIDE_ADD_ALTRA_PARTITA_MODAL";
+export const SHOW_DELETE_ALTRA_PARTITA_MODAL = "SHOW_DELETE_ALTRA_PARTITA_MODAL";
+export const HIDE_DELETE_ALTRA_PARTITA_MODAL = "HIDE_DELETE_ALTRA_PARTITA_MODAL";
 
 export const setTokenAction = (token: string) => ({ type: SET_TOKEN, payload: token });
 export const unsetTokenAction = () => ({ type: UNSET_TOKEN });
@@ -59,6 +67,14 @@ export const showAddFornituraModalAction = (id?: string) => ({ type: SHOW_ADD_FO
 export const hideAddFornituraModalAction = () => ({ type: HIDE_ADD_FORNITURA_MODAL });
 export const showDeleteFornituraModalAction = (id?: string) => ({ type: SHOW_DELETE_FORNITURA_MODAL, payload: id });
 export const hideDeleteFornituraModalAction = () => ({ type: HIDE_DELETE_FORNITURA_MODAL });
+export const showAddOffertaModalAction = (id?: number) => ({ type: SHOW_ADD_OFFERTA_MODAL, payload: id });
+export const hideAddOffertaModalAction = () => ({ type: HIDE_ADD_OFFERTA_MODAL });
+export const showDeleteOffertaModalAction = (id?: number) => ({ type: SHOW_DELETE_OFFERTA_MODAL, payload: id });
+export const hideDeleteOffertaModalAction = () => ({ type: HIDE_DELETE_OFFERTA_MODAL });
+export const showAddAltraPartitaModalAction = (id?: number) => ({ type: SHOW_ADD_ALTRA_PARTITA_MODAL, payload: id });
+export const hideAddAltraPartitaModalAction = () => ({ type: HIDE_ADD_ALTRA_PARTITA_MODAL });
+export const showDeleteAltraPartitaModalAction = (id?: number) => ({ type: SHOW_DELETE_ALTRA_PARTITA_MODAL, payload: id });
+export const hideDeleteAltraPartitaModalAction = () => ({ type: HIDE_DELETE_ALTRA_PARTITA_MODAL });
 
 export const loginAction = (username: string, password: string) => {
   return async (dispatch: AppDispatch) => {
