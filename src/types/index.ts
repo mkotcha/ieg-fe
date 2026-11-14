@@ -149,6 +149,13 @@ export interface FatturaSingola {
   totalePartite: number | null;
   /** imponibile + iva + altre partite esenti iva */
   totaleDaPagare: number | null;
+  /** consumo con le perdite */
+  consumoTotP?: number | null;
+  potenzaPrelevata?: number | null;
+  /** prezzo medio €/kWh (spesa per consumi / consumo) */
+  spesaMedia?: number | null;
+  letturaIniziale?: Lettura | null;
+  letturaFinale?: Lettura | null;
   voci: VoceFatturaSingola[];
 }
 

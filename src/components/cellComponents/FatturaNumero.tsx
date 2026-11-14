@@ -5,6 +5,16 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../../redux/hooks";
 import type { Fattura } from "../../types";
 
+/** Nome del file mandato dal backend in X-Filename (url-encoded: "<numero> - <ragione sociale>.pdf"). */
+const nomeFile = (header: string | undefined) => {
+  if (!header) return "fattura";
+  try {
+    return decodeURIComponent(header);
+  } catch {
+    return header;
+  }
+};
+
 const FatturaNumero = (params: ICellRendererParams<Fattura>) => {
   const token = useAppSelector(state => state.auth.token);
   const fetchPdf = async () => {
@@ -18,7 +28,7 @@ const FatturaNumero = (params: ICellRendererParams<Fattura>) => {
       window.open(url, "_blank");
       const link = document.createElement("a");
       link.href = url;
-      const fileName = response.headers["x-filename"] as string;
+      const fileName = nomeFile(response.headers["x-filename"] as string | undefined);
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
@@ -35,7 +45,7 @@ const FatturaNumero = (params: ICellRendererParams<Fattura>) => {
       const url = window.URL.createObjectURL(response.data);
       const link = document.createElement("a");
       link.href = url;
-      const fileName = response.headers["x-filename"] as string;
+      const fileName = nomeFile(response.headers["x-filename"] as string | undefined);
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();

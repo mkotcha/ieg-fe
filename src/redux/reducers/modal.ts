@@ -23,6 +23,7 @@ import {
   HIDE_DELETE_FORNITURA_MODAL,
   SHOW_ADD_OFFERTA_MODAL,
   HIDE_ADD_OFFERTA_MODAL,
+  SHOW_NUOVA_OFFERTA_FORNITURA_MODAL,
   SHOW_DELETE_OFFERTA_MODAL,
   HIDE_DELETE_OFFERTA_MODAL,
   SHOW_ADD_ALTRA_PARTITA_MODAL,
@@ -55,6 +56,8 @@ export interface ModalState {
   deleteFornituraId: string | null;
   showAddOffertaModal: boolean;
   modOffertaId: number | null;
+  /** pod a cui associare l'offerta appena creata */
+  offertaPerPod: string | null;
   showDeleteOffertaModal: boolean;
   deleteOffertaId: number | null;
   showAddAltraPartitaModal: boolean;
@@ -92,6 +95,7 @@ const initialState: ModalState = {
   deleteFornituraId: null,
   showAddOffertaModal: false,
   modOffertaId: null,
+  offertaPerPod: null,
   showDeleteOffertaModal: false,
   deleteOffertaId: null,
   showAddAltraPartitaModal: false,
@@ -238,12 +242,21 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         ...state,
         showAddOffertaModal: true,
         modOffertaId: action.payload as number,
+        offertaPerPod: null,
+      };
+    case SHOW_NUOVA_OFFERTA_FORNITURA_MODAL:
+      return {
+        ...state,
+        showAddOffertaModal: true,
+        modOffertaId: null,
+        offertaPerPod: action.payload as string,
       };
     case HIDE_ADD_OFFERTA_MODAL:
       return {
         ...state,
         showAddOffertaModal: false,
         modOffertaId: null,
+        offertaPerPod: null,
       };
     case SHOW_DELETE_OFFERTA_MODAL:
       return {

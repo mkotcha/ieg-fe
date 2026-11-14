@@ -58,7 +58,10 @@ const Oneri = () => {
       const response = await axios.get<OneriType[]>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setOneriRowData(response.data);
+      // dal trimestre più recente; nello stesso trimestre per tipo (BTA)
+      setOneriRowData(
+        [...response.data].sort((a, b) => b.anno - a.anno || b.trimestre - a.trimestre || a.tipo.localeCompare(b.tipo)),
+      );
     };
 
     if (!showAddOneriModal && !showDeleteOneriModal) fetchOneri();
@@ -70,7 +73,8 @@ const Oneri = () => {
       const response = await axios.get<Dispacciamento[]>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDispacciamentoRowData(response.data);
+      // dal mese più recente
+      setDispacciamentoRowData([...response.data].sort((a, b) => b.anno - a.anno || b.mese - a.mese));
     };
     if (!showAddDispacciamentoModal && !showDeleteDispacciamentoModal) fetchDispacciamento();
   }, [showDeleteDispacciamentoModal, showAddDispacciamentoModal, token]);

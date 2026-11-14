@@ -5,13 +5,15 @@ import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FatturaNumero from "./cellComponents/FatturaNumero";
+import FornituraOfferta from "./cellComponents/FornituraOfferta";
 import { useNavigate } from "react-router-dom";
 import ClienteTipo from "./cellComponents/ClienteTipo";
 import FornituraPod from "./cellComponents/FornituraPod";
 import { useAppSelector } from "../redux/hooks";
 import type { Cliente as ClienteType, Fattura, Fornitura, VoceFatturaSingola } from "../types";
+import { NOMI_MESI } from "../utils/formato";
 
 const Cliente = () => {
   const { id } = useParams();
@@ -42,6 +44,40 @@ const Cliente = () => {
     { field: "tipoPrelievo" },
     { field: "tipoContatore" },
     { field: "codiceDistributore" },
+  ]);
+  // offerta associata a ogni fornitura: stesse righe della tabella forniture
+  const formatNumeroOfferta = (p: ValueFormatterParams<Fornitura, number | null | undefined>) =>
+    p.value == null ? "" : p.value.toLocaleString("it-IT", { maximumFractionDigits: 6 });
+  const formatBoolOfferta = (p: ValueFormatterParams<Fornitura, boolean | undefined>) =>
+    p.data?.offerta ? (p.value ? "Sì" : "No") : "";
+  const [colDefsOfferte] = useState<ColDef<Fornitura>[]>([
+    {
+      field: "id",
+      headerName: "POD",
+      filter: true,
+      cellRenderer: (p: { value: string }) => (
+        <Link to={`/fornitura/${p.value}`} className="text-decoration-none text-reset">
+          {p.value}
+        </Link>
+      ),
+    },
+    { field: "offerta.nome", headerName: "Offerta", filter: true, cellRenderer: FornituraOfferta },
+    { field: "offerta.codice", headerName: "Codice", filter: true },
+    { field: "offerta.tipo", headerName: "Tipo", filter: true },
+    { field: "offerta.f1", headerName: "F1", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.f2", headerName: "F2", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.f3", headerName: "F3", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.pun", headerName: "PUN", valueFormatter: formatBoolOfferta },
+    { field: "offerta.capacitaMaggiorazione", headerName: "Maggiorazione capacità", valueFormatter: formatBoolOfferta },
+    { field: "offerta.maggiorazione", headerName: "Maggiorazione", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.hasSpread", headerName: "Spread attivo", valueFormatter: formatBoolOfferta },
+    { field: "offerta.spread", headerName: "Spread", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.ocv", headerName: "OCV", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.modalitaProgrammazione", headerName: "Modalità OCV" },
+    { field: "offerta.ocf", headerName: "OCF", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.dataInizio", headerName: "Data inizio", filter: true },
+    { field: "offerta.dataFine", headerName: "Data fine", filter: true },
+    { field: "offerta.descrizione", headerName: "Descrizione" },
   ]);
   const [rowDataCliente, setRowDataCliente] = useState<ClienteType[]>([]);
   const [colDefsCliente] = useState<ColDef<ClienteType>[]>([
@@ -106,6 +142,18 @@ const Cliente = () => {
       field: "numeroFattura",
       headerName: "Numero fattura",
       cellRenderer: FatturaNumero,
+      filter: true,
+    },
+    {
+      field: "mese",
+      headerName: "Mese",
+      // mese di consumo: mostrato per nome, ordinato per numero
+      valueFormatter: p => (p.value ? NOMI_MESI[p.value - 1] : ""),
+      filter: true,
+    },
+    {
+      field: "anno",
+      headerName: "Anno",
       filter: true,
     },
     {
@@ -183,7 +231,11 @@ const Cliente = () => {
     const response = await axios.get<Fattura[]>(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    setRowDataFatture(response.data);
+    // dalla più recente alla più vecchia (anno e mese di consumo, poi numero)
+    const fatture = [...response.data].sort(
+      (a, b) => b.anno - a.anno || b.mese - a.mese || b.numeroFattura.localeCompare(a.numeroFattura),
+    );
+    setRowDataFatture(fatture);
   }, [id, token]);
 
   useEffect(() => {
@@ -195,6 +247,15 @@ const Cliente = () => {
       setCliente(response.data);
       setRowDataCliente([response.data]);
     };
+    fetchCliente();
+    fetchFatture();
+  }, [fetchFatture, id, token]);
+
+  // forniture (con la loro offerta): ricaricate anche alla chiusura delle modali di modifica fornitura/offerta
+  const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
+  const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
+  useEffect(() => {
+    if (!token || showAddFornituraModal || showAddOffertaModal) return;
     const fetchForniture = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti/${id}/forniture`;
       const response = await axios.get<Fornitura[]>(url, {
@@ -202,11 +263,8 @@ const Cliente = () => {
       });
       setRowDataForniture(response.data);
     };
-
-    fetchCliente();
     fetchForniture();
-    fetchFatture();
-  }, [fetchFatture, id, token]);
+  }, [id, token, showAddFornituraModal, showAddOffertaModal]);
 
   const creaFattura = async () => {
     const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti/${id}/fattura?mese=${mese}&anno=${anno}`;
@@ -250,6 +308,18 @@ const Cliente = () => {
             <AgGridReact
               rowData={rowDataForniture}
               columnDefs={colDefsForniture}
+              autoSizeStrategy={autoSizeStrategy}
+              domLayout={`autoHeight`}
+              enableCellTextSelection={true}
+            />
+          </div>
+        </div>
+        <div className="border rounded-3 bg-body-tertiary mb-3">
+          <h3 className="m-2">Offerte</h3>
+          <div className="ag-theme-quartz-dark ">
+            <AgGridReact
+              rowData={rowDataForniture}
+              columnDefs={colDefsOfferte}
               autoSizeStrategy={autoSizeStrategy}
               domLayout={`autoHeight`}
               enableCellTextSelection={true}

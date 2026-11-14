@@ -36,6 +36,7 @@ const offertaVuota: FormOfferta = {
 const AddOffertaModal = () => {
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
   const modOffertaId = useAppSelector(state => state.modal.modOffertaId);
+  const offertaPerPod = useAppSelector(state => state.modal.offertaPerPod);
   const token = useAppSelector(state => state.auth.token);
   const [offerta, setOfferta] = useState<FormOfferta>(offertaVuota);
   const [errore, setErrore] = useState<string | null>(null);
@@ -69,9 +70,17 @@ const AddOffertaModal = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(urlApi, body, {
+        const creata = await axios.post<Offerta>(urlApi, body, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        // aperta dalla pagina di una fornitura: la nuova offerta diventa la sua
+        if (offertaPerPod) {
+          await axios.put(
+            `${import.meta.env.VITE_REACT_APP_API_URL}/forniture/${offertaPerPod}/offerta?offertaId=${creata.data.id}`,
+            null,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+        }
       }
       dispatch(hideAddOffertaModalAction());
     } catch (error) {
@@ -124,7 +133,8 @@ const AddOffertaModal = () => {
       onHide={() => dispatch(hideAddOffertaModalAction())}
       aria-labelledby="add-offerta-modal-title">
       <Modal.Header closeButton>
-        <Modal.Title id="add-offerta-modal-title">{modOffertaId ? "Modifica offerta" : "Aggiungi offerta"}</Modal.Title>
+        <Modal.Title id="add-offerta-modal-title">{modOffertaId ? "Modifica offerta" : offertaPerPod ? `Nuova offerta per ${offertaPerPod}` : "Aggiungi offerta"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handlePost}>
