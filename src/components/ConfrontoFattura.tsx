@@ -41,7 +41,8 @@ const ConfrontoFattura = () => {
     carica();
   }, [numero, token, navigate]);
 
-  const classeDifferenza = (p: { data?: ConfrontoVoce }) => (p.data?.anomala ? "text-danger fw-semibold" : "");
+  // regole e non cellClass: cellClass sostituirebbe la classe di allineamento a destra di rightAligned
+  const classiDifferenza = { "text-danger fw-semibold": (p: { data?: ConfrontoVoce }) => !!p.data?.anomala };
   const [colDefs] = useState<ColDef<ConfrontoVoce>[]>([
     {
       field: "descrizione",
@@ -74,7 +75,7 @@ const ConfrontoFattura = () => {
       headerName: "Diff. q.tà",
       valueFormatter: p => formatNumero(p.value),
       type: "rightAligned",
-      cellClass: classeDifferenza,
+      cellClassRules: classiDifferenza,
     },
     { field: "importoNostro", headerName: "Nostro €", valueFormatter: p => formatEuro(p.value), type: "rightAligned" },
     {
@@ -88,7 +89,7 @@ const ConfrontoFattura = () => {
       headerName: "Diff. €",
       valueFormatter: p => formatEuro(p.value),
       type: "rightAligned",
-      cellClass: classeDifferenza,
+      cellClassRules: classiDifferenza,
     },
   ]);
 

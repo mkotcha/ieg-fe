@@ -1,75 +1,15 @@
 import type { ICellRendererParams } from "ag-grid-community";
-import axios from "axios";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { useAppSelector } from "../../redux/hooks";
 import type { Fattura } from "../../types";
+import PulsantiFattura from "./PulsantiFattura";
 
-/** Nome del file mandato dal backend in X-Filename (url-encoded: "<numero> - <ragione sociale>.pdf"). */
-const nomeFile = (header: string | undefined) => {
-  if (!header) return "fattura";
-  try {
-    return decodeURIComponent(header);
-  } catch {
-    return header;
-  }
-};
-
+/** Numero della fattura con i pulsanti confronto con il fornitore, excel e pdf. */
 const FatturaNumero = (params: ICellRendererParams<Fattura>) => {
-  const token = useAppSelector(state => state.auth.token);
-  const fetchPdf = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture/${params.data?.numeroFattura}/pdf`;
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: "blob",
-    });
-    if (response.status === 200) {
-      const url = window.URL.createObjectURL(response.data);
-      window.open(url, "_blank");
-      const link = document.createElement("a");
-      link.href = url;
-      const fileName = nomeFile(response.headers["x-filename"] as string | undefined);
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-    }
-  };
-
-  const fetchXlsx = async () => {
-    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture/${params.data?.numeroFattura}/xlsx`;
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: "blob",
-    });
-    if (response.status === 200) {
-      const url = window.URL.createObjectURL(response.data);
-      const link = document.createElement("a");
-      link.href = url;
-      const fileName = nomeFile(response.headers["x-filename"] as string | undefined);
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-    }
-  };
-
+  const numero = params.data?.numeroFattura;
   return (
-    <>
-      <div className="d-flex">
-        <div>{params.data?.numeroFattura} </div>
-        <Link
-          to={`/fatture/${params.data?.numeroFattura}/confronto`}
-          className="btn btn-sm btn-secondary ms-auto me-1 border border-0"
-          title="confronto con il fornitore">
-          <i className="bi bi-arrow-left-right"></i>
-        </Link>
-        <Button size="sm" variant="success" onClick={fetchXlsx} className="me-1 border border-0">
-          <i className="bi bi-table"></i>
-        </Button>
-        <Button size="sm" variant="danger" onClick={fetchPdf} className="ms-1 border border-0">
-          <i className="bi bi-file-pdf-fill"></i>
-        </Button>
-      </div>
-    </>
+    <div className="d-flex">
+      <div>{numero}</div>
+      {numero && <PulsantiFattura numero={numero} />}
+    </div>
   );
 };
 

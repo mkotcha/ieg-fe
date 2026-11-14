@@ -15,6 +15,7 @@ import type {
 import { erroreApi } from "../utils/erroreApi";
 import { formatEuro, NOMI_MESI } from "../utils/formato";
 import RiepilogoConfronto from "./RiepilogoConfronto";
+import PulsantiFattura from "./cellComponents/PulsantiFattura";
 
 interface Props {
   mese: number;
@@ -90,40 +91,57 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
       field: "numeroFattura",
       headerName: "Fattura",
       filter: true,
-      cellRenderer: (p: { value: string }) => <Link to={`/fatture/${p.value}/confronto`}>{p.value}</Link>,
+      // il numero porta al confronto per fornitura, i pulsanti scaricano excel e pdf
+      cellRenderer: (p: { value: string }) => (
+        <div className="d-flex">
+          <Link to={`/fatture/${p.value}/confronto`} className="text-decoration-none text-reset">
+            {p.value}
+          </Link>
+          <PulsantiFattura numero={p.value} confronto={false} />
+        </div>
+      ),
     },
     {
       field: "ragioneSociale",
       headerName: "Cliente",
       filter: true,
       cellRenderer: (p: { value: string; data?: ConfrontoFattura }) => (
-        <Link to={`/cliente/${p.data?.clienteId}`} onClick={e => e.stopPropagation()}>
+        <Link
+          to={`/cliente/${p.data?.clienteId}`}
+          onClick={e => e.stopPropagation()}
+          className="text-decoration-none text-reset">
           {p.value}
         </Link>
       ),
     },
     { field: "totaleNostro", headerName: "Nostro €", valueFormatter: p => formatEuro(p.value), type: "rightAligned" },
-    { field: "totaleFornitore", headerName: "Fornitore €", valueFormatter: p => formatEuro(p.value), type: "rightAligned" },
+    {
+      field: "totaleFornitore",
+      headerName: "Fornitore €",
+      valueFormatter: p => formatEuro(p.value),
+      type: "rightAligned",
+    },
     {
       field: "margine",
       headerName: "Margine €",
       valueFormatter: p => formatEuro(p.value),
       type: "rightAligned",
-      cellClass: p => ((p.value ?? 0) < 0 ? "text-danger" : "text-success"),
+      // cellClassRules e non cellClass: cellClass sostituirebbe la classe di allineamento a destra di rightAligned
+      cellClassRules: { "text-danger": p => (p.value ?? 0) < 0, "text-success": p => (p.value ?? 0) >= 0 },
     },
     {
       field: "differenzaPassanti",
       headerName: "Diff. passanti €",
       valueFormatter: p => formatEuro(p.value),
       type: "rightAligned",
-      cellClass: p => (Math.abs(p.value ?? 0) > 1 ? "text-warning" : ""),
+      cellClassRules: { "text-warning": p => Math.abs(p.value ?? 0) > 1 },
     },
     {
       field: "anomalie",
       headerName: "Anomalie",
       type: "rightAligned",
       sort: "desc",
-      cellClass: p => ((p.value ?? 0) > 0 ? "text-warning fw-semibold" : "text-success"),
+      cellClassRules: { "text-warning fw-semibold": p => (p.value ?? 0) > 0, "text-success": p => (p.value ?? 0) === 0 },
     },
   ]);
 
@@ -155,8 +173,8 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
         )}
         {esitiUpload?.map(e => (
           <Alert key={e.numero} variant="success" className="py-2" dismissible onClose={() => setEsitiUpload(null)}>
-            Bolletta <strong>{e.numero}</strong> {e.sostituita ? "sostituita" : "importata"}: {e.righe.toLocaleString("it-IT")}{" "}
-            righe, imponibile {formatEuro(e.totaleImponibile)} €
+            Bolletta <strong>{e.numero}</strong> {e.sostituita ? "sostituita" : "importata"}:{" "}
+            {e.righe.toLocaleString("it-IT")} righe, imponibile {formatEuro(e.totaleImponibile)} €
             {e.righeScartate > 0 && <> · {e.righeScartate} righe scartate (vedi log)</>}
             {e.righeNonMappate > 0 && <> · {e.righeNonMappate} righe non mappate</>}
             {e.podSconosciuti.length > 0 && <> · POD non in anagrafica: {e.podSconosciuti.join(", ")}</>}
@@ -216,7 +234,13 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                     {confronto.podSenzaFattura.map(p => (
                       <tr key={p.pod}>
                         <td className="font-monospace">
-                          {p.inAnagrafica ? <Link to={`/fornitura/${p.pod}`}>{p.pod}</Link> : p.pod}
+                          {p.inAnagrafica ? (
+                            <Link to={`/fornitura/${p.pod}`} className="text-decoration-none text-reset">
+                              {p.pod}
+                            </Link>
+                          ) : (
+                            p.pod
+                          )}
                         </td>
                         <td>{p.inAnagrafica ? "sì" : "no"}</td>
                         <td className="text-end">{formatEuro(p.importoFornitore)}</td>
@@ -232,7 +256,9 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
           <div className="small text-body-secondary mt-2">
             Bollette del fornitore importate:{" "}
             {bollette
-              .map(b => `${b.numero} del ${b.dataEmissione ? new Date(b.dataEmissione).toLocaleDateString("it-IT") : "?"}`)
+              .map(
+                b => `${b.numero} del ${b.dataEmissione ? new Date(b.dataEmissione).toLocaleDateString("it-IT") : "?"}`,
+              )
               .join(" · ")}
           </div>
         )}

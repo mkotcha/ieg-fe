@@ -420,3 +420,21 @@ export interface ConsumoMensile {
   /** pod considerati: per un cliente tutti i suoi */
   fornitureTotali: number;
 }
+
+/** GET /fatture/elenco: fattura senza dettagli per fornitura. */
+export interface FatturaElenco {
+  numeroFattura: string;
+  dataFattura: string | null;
+  /** mese di consumo */
+  mese: number;
+  anno: number;
+  clienteId: number;
+  ragioneSociale: string;
+  /** pod fatturati */
+  forniture: number;
+  consumoTot: number | null;
+  totaleImponibile: number | null;
+  totaleIva: number | null;
+  /** null per le fatture generate prima del campo */
+  totaleDaPagare: number | null;
+}

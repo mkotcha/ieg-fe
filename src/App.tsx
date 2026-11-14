@@ -26,6 +26,7 @@ import Offerte from "./components/Offerte";
 import AltrePartite from "./components/AltrePartite";
 import ConfrontoFattura from "./components/ConfrontoFattura";
 import AddOffertaModal from "./components/modals/AddOffertaModal";
+import Fatture from "./components/Fatture";
 import CambiaOffertaModal from "./components/modals/CambiaOffertaModal";
 import DeleteOffertaModal from "./components/modals/DeleteOffertaModal";
 import AddAltraPartitaModal from "./components/modals/AddAltraPartitaModal";
@@ -51,6 +52,7 @@ function App() {
         <Route path="/oneri" element={<Oneri />} />
         <Route path="/offerte" element={<Offerte />} />
         <Route path="/altre-partite" element={<AltrePartite />} />
+        <Route path="/fatture" element={<Fatture />} />
         <Route path="/fatture/:numero/confronto" element={<ConfrontoFattura />} />
       </Routes>
       <BottomBar />

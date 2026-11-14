@@ -98,10 +98,14 @@ const VerificaLetture = ({ mese, anno }: { mese: number; anno: number }) => {
             {righe.map(e => (
               <tr key={e.pod}>
                 <td className="font-monospace">
-                  <Link to={`/letture/${e.pod}`}>{e.pod}</Link>
+                  <Link to={`/letture/${e.pod}`} className="text-decoration-none text-reset">
+                    {e.pod}
+                  </Link>
                 </td>
                 <td>
-                  <Link to={`/cliente/${e.clienteId}`}>{e.ragioneSociale}</Link>
+                  <Link to={`/cliente/${e.clienteId}`} className="text-decoration-none text-reset">
+                    {e.ragioneSociale}
+                  </Link>
                 </td>
                 <td className="text-nowrap">
                   {formatData(e.dal)} - {formatData(e.al)}

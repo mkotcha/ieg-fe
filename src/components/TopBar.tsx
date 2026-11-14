@@ -33,6 +33,9 @@ const TopBar = () => {
                     <NavLink to={"/forniture"} className="nav-link">
                       Forniture
                     </NavLink>
+                    <NavLink to={"/fatture"} className="nav-link">
+                      Fatture
+                    </NavLink>
                     <NavLink to={"/letture"} className="nav-link">
                       Letture
                     </NavLink>

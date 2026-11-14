@@ -178,7 +178,9 @@ const HomePage = () => {
                     {esiti.map(e => (
                       <tr key={e.clienteId}>
                         <td>
-                          <Link to={`/cliente/${e.clienteId}`}>{e.ragioneSociale}</Link>
+                          <Link to={`/cliente/${e.clienteId}`} className="text-decoration-none text-reset">
+                            {e.ragioneSociale}
+                          </Link>
                         </td>
                         <td className="font-monospace">{e.numeroFattura}</td>
                         <td className="text-end">{formatEuro(e.totale)}</td>
