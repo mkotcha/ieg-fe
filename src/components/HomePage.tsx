@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
 import ConfrontoFornitore from "./ConfrontoFornitore";
+import AvanzamentoLavoro from "./AvanzamentoLavoro";
+import { useLavoro } from "../hooks/useLavoro";
 import type { Cliente, EsitoFattura, Fattura, Fornitura, LetturaMancante, PagedResponse } from "../types";
 
 const HomePage = () => {
@@ -13,9 +15,9 @@ const HomePage = () => {
   const [forniture, setForniture] = useState<Fornitura[] | null>(null);
   const [fatture, setFatture] = useState<Fattura[] | null>(null);
   const [lettureMancanti, setLettureMancanti] = useState<LetturaMancante[]>([]);
-  const [esiti, setEsiti] = useState<EsitoFattura[] | null>(null);
-  const [generazione, setGenerazione] = useState(false);
-  const [erroreGenerazione, setErroreGenerazione] = useState<string | null>(null);
+  // generazione in background: esiti per cliente nel risultato del lavoro completato
+  const generazione = useLavoro<EsitoFattura[]>("GENERAZIONE_FATTURE");
+  const esiti = generazione.lavoro?.stato === "COMPLETATO" ? generazione.lavoro.risultato : null;
   const currentMonth = new Date().getMonth();
   const [mese, setMese] = useState<number | string>(currentMonth === 0 ? 12 : currentMonth);
   const [anno, setAnno] = useState<number | string>(
@@ -70,26 +72,15 @@ const HomePage = () => {
 
   const generaFatture = async () => {
     if (!window.confirm(`Generare le fatture di ${mese}/${anno} per tutti i clienti attivi?`)) return;
-    setGenerazione(true);
-    setErroreGenerazione(null);
-    setEsiti(null);
-    try {
-      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture/genera?mese=${mese}&anno=${anno}`;
-      const response = await axios.post<EsitoFattura[]>(url, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEsiti(response.data);
-      setFatture(null); // ricarica il conteggio delle fatture emesse
-    } catch (error) {
-      setErroreGenerazione(
-        axios.isAxiosError(error) && error.response?.status === 403
-          ? "Operazione riservata agli amministratori"
-          : "Errore durante la generazione delle fatture"
-      );
-    } finally {
-      setGenerazione(false);
-    }
+    const url = `${import.meta.env.VITE_REACT_APP_API_URL}/fatture/genera?mese=${mese}&anno=${anno}`;
+    await generazione.avvia(() => axios.post(url, null, { headers: { Authorization: `Bearer ${token}` } }));
   };
+
+  // a generazione terminata ricarica il conteggio delle fatture emesse
+  const statoGenerazione = generazione.lavoro?.stato;
+  useEffect(() => {
+    if (statoGenerazione === "COMPLETATO") setFatture(null);
+  }, [statoGenerazione]);
 
   const formatEuro = (n: number | null) =>
     n === null ? "" : n.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -162,8 +153,13 @@ const HomePage = () => {
             </div>
             <div>
               totale fatture emesse nel periodo: {fattureDelPeriodo?.length} / {forniture ? clientiAttivi?.length : ""}
-              <Button onClick={generaFatture} size="sm" variant="primary" className="mx-2" disabled={generazione}>
-                {generazione ? (
+              <Button
+                onClick={generaFatture}
+                size="sm"
+                variant="primary"
+                className="mx-2"
+                disabled={generazione.inCorso}>
+                {generazione.inCorso ? (
                   <>
                     <Spinner animation="border" size="sm" className="me-1" /> generazione in corso...
                   </>
@@ -172,11 +168,12 @@ const HomePage = () => {
                 )}
               </Button>
             </div>
-            {erroreGenerazione && (
+            {generazione.errore && (
               <Alert variant="danger" className="my-2 py-2">
-                {erroreGenerazione}
+                {generazione.errore}
               </Alert>
             )}
+            {generazione.lavoro && <AvanzamentoLavoro lavoro={generazione.lavoro} onChiudi={generazione.chiudi} />}
             {esiti && (
               <div className="my-2">
                 <div>

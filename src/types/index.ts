@@ -351,3 +351,38 @@ export interface TariffaNonMappata {
   nrArticolo: string | null;
   descrizione: string | null;
 }
+
+export type TipoLavoro = "GENERAZIONE_FATTURE" | "IMPORT_LETTURE";
+export type StatoLavoro = "IN_CORSO" | "COMPLETATO" | "FALLITO";
+
+/** Operazione lunga in background (GET /lavori/{id}): fatti/totale della fase corrente, totale 0 = durata non nota. */
+export interface Lavoro<R = unknown> {
+  id: string;
+  tipo: TipoLavoro;
+  descrizione: string;
+  inizio: string;
+  fine: string | null;
+  stato: StatoLavoro;
+  fase: string;
+  totale: number;
+  fatti: number;
+  /** errori sui singoli elementi (non interrompono il lavoro) */
+  errori: number;
+  messaggi: string[];
+  /** errore che ha interrotto il lavoro */
+  errore: string | null;
+  /** esito, presente a lavoro completato */
+  risultato: R | null;
+  inCorso: boolean;
+}
+
+/** Risultato del lavoro IMPORT_LETTURE. */
+export interface EsitoImportLetture {
+  file: number;
+  fileScartati: number;
+  inserite: number;
+  aggiornate: number;
+  switchMantenute: number;
+  errori: number;
+  podSconosciuti: string[];
+}
