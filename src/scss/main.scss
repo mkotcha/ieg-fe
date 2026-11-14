@@ -48,6 +48,28 @@ body {
   border: none !important;
   outline: none;
 }
+// pulsanti nelle celle delle tabelle: tutti della stessa misura, centrati in verticale con qualche pixel di
+// aria sopra e sotto (senza, nei contenitori flex si allungavano fino a occupare tutta l'altezza della riga)
+// quadrati (min-width = altezza): un pulsante con testo si allarga, quelli con la sola icona restano quadrati
+.ag-theme-quartz-dark .ag-cell .btn-sm {
+  --bs-btn-padding-y: 0;
+  --bs-btn-padding-x: 0.35rem;
+  --bs-btn-font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  height: 1.75rem;
+  min-width: 1.75rem;
+}
+
+// contenitore dei pulsanti alto quanto una riga di testo anche senza testo (es. solo matita e cestino), così i
+// pulsanti restano centrati come nelle celle con testo
+.ag-theme-quartz-dark .ag-cell-value > .d-flex:has(> .btn-sm)::before {
+  content: "\200b";
+  width: 0;
+}
+
 // voci del confronto con il fornitore fuori tolleranza
 .ag-theme-quartz-dark .riga-anomala {
   background-color: rgba(220, 53, 69, 0.22);
