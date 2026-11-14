@@ -257,8 +257,9 @@ const Cliente = () => {
   // forniture (con la loro offerta): ricaricate anche alla chiusura delle modali di modifica fornitura/offerta
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
+  const cambioOfferta = useAppSelector(state => state.modal.cambiaOffertaPod !== null);
   useEffect(() => {
-    if (!token || showAddFornituraModal || showAddOffertaModal) return;
+    if (!token || showAddFornituraModal || showAddOffertaModal || cambioOfferta) return;
     const fetchForniture = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti/${id}/forniture`;
       const response = await axios.get<Fornitura[]>(url, {
@@ -267,7 +268,7 @@ const Cliente = () => {
       setRowDataForniture(response.data);
     };
     fetchForniture();
-  }, [id, token, showAddFornituraModal, showAddOffertaModal]);
+  }, [id, token, showAddFornituraModal, showAddOffertaModal, cambioOfferta]);
 
   const creaFattura = async () => {
     const url = `${import.meta.env.VITE_REACT_APP_API_URL}/clienti/${id}/fattura?mese=${mese}&anno=${anno}`;

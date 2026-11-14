@@ -1,9 +1,9 @@
 import { AgGridReact } from "ag-grid-react";
 import type { ColDef, RowClickedEvent, ValueFormatterParams } from "ag-grid-community";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Container } from "react-bootstrap";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { showAddOffertaModalAction } from "../redux/actions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import OffertaNome from "./cellComponents/OffertaNome";
@@ -40,7 +40,13 @@ const Offerte = () => {
     { field: "descrizione", headerName: "Descrizione" },
   ]);
 
-  const [offertaSelezionata, setOffertaSelezionata] = useState<Offerta | null>(null);
+  // offerta selezionata nell'indirizzo (/offerte?id=...): ci si arriva anche dal nome dell'offerta nelle altre pagine
+  const [searchParams, setSearchParams] = useSearchParams();
+  const idSelezionato = searchParams.get("id");
+  const offertaSelezionata = rowData.find(o => String(o.id) === idSelezionato) ?? null;
+  const setOffertaSelezionata = (offerta: Offerta | null) =>
+    setSearchParams(offerta ? { id: String(offerta.id) } : {}, { replace: true });
+  const gridRef = useRef<AgGridReact<Offerta>>(null);
   const [forniture, setForniture] = useState<Fornitura[]>([]);
   const [fornitureColDefs] = useState<ColDef<Fornitura>[]>([
     {
@@ -102,12 +108,21 @@ const Offerte = () => {
     };
     if (offertaSelezionata) fetchForniture();
     else setForniture([]);
-  }, [offertaSelezionata, token]);
+    // si ricarica solo se cambia l'offerta, non a ogni ricarica dell'elenco
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offertaSelezionata?.id, token]);
 
-  // se l'offerta selezionata viene eliminata si chiude il dettaglio
-  useEffect(() => {
-    setOffertaSelezionata(prev => (prev && rowData.some(o => o.id === prev.id) ? prev : null));
-  }, [rowData]);
+  // riga dell'offerta selezionata evidenziata e portata in vista (anche quando si arriva da un link)
+  const evidenziaSelezionata = () => {
+    const api = gridRef.current?.api;
+    if (!api) return;
+    api.forEachNode(nodo => {
+      const selezionato = String(nodo.data?.id) === idSelezionato;
+      nodo.setSelected(selezionato);
+      if (selezionato) api.ensureNodeVisible(nodo, "middle");
+    });
+  };
+  useEffect(evidenziaSelezionata, [idSelezionato, rowData]);
 
   useEffect(() => {
     if (!token) {
@@ -136,6 +151,8 @@ const Offerte = () => {
             ensureDomOrder={true}
             rowSelection="single"
             onRowClicked={onRowClicked}
+            ref={gridRef}
+            onFirstDataRendered={evidenziaSelezionata}
           />
         </div>
         {offertaSelezionata && (

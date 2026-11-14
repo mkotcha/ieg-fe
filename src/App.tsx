@@ -26,6 +26,7 @@ import Offerte from "./components/Offerte";
 import AltrePartite from "./components/AltrePartite";
 import ConfrontoFattura from "./components/ConfrontoFattura";
 import AddOffertaModal from "./components/modals/AddOffertaModal";
+import CambiaOffertaModal from "./components/modals/CambiaOffertaModal";
 import DeleteOffertaModal from "./components/modals/DeleteOffertaModal";
 import AddAltraPartitaModal from "./components/modals/AddAltraPartitaModal";
 import DeleteAltraPartitaModal from "./components/modals/DeleteAltraPartitaModal";
@@ -65,6 +66,7 @@ function App() {
       <DeleteClienteModal />
       <DeleteFornituraModal />
       <AddOffertaModal />
+      <CambiaOffertaModal />
       <DeleteOffertaModal />
       <AddAltraPartitaModal />
       <DeleteAltraPartitaModal />

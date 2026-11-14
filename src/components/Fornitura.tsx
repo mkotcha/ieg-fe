@@ -244,7 +244,18 @@ const Fornitura = () => {
           </Col>
           <Col lg={4}>
             <Scheda
-              titolo={offerta ? `Offerta - ${offerta.nome}` : "Offerta"}
+              titolo={
+                offerta ? (
+                  <>
+                    Offerta -{" "}
+                    <Link to={`/offerte?id=${offerta.id}`} title="vai all'offerta e alle sue forniture">
+                      {offerta.nome}
+                    </Link>
+                  </>
+                ) : (
+                  "Offerta"
+                )
+              }
               azioni={
                 <div className="me-2 d-flex gap-1">
                   {offerta && (

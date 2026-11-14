@@ -6,9 +6,13 @@ import { AgGridReact } from "ag-grid-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import FornituraPod from "./cellComponents/FornituraPod";
+import FornituraOfferta from "./cellComponents/FornituraOfferta";
+import { formatEuro, formatNumero } from "../utils/formato";
 import { showAddFornituraModalAction } from "../redux/actions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import type { Fornitura, PagedResponse } from "../types";
+
+const formatData = (d: string | null | undefined) => (d ? new Date(d).toLocaleDateString("it-IT") : "");
 
 const Forniture = () => {
   const token = useAppSelector(state => state.auth.token);
@@ -16,6 +20,8 @@ const Forniture = () => {
   const dispatch = useAppDispatch();
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const showDeleteFornituraModal = useAppSelector(state => state.modal.showDeleteFornituraModal);
+  const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
+  const cambioOfferta = useAppSelector(state => state.modal.cambiaOffertaPod !== null);
   const [rowData, setRowData] = useState<Fornitura[]>([]);
   const [colDefs] = useState<ColDef<Fornitura>[]>([
     {
@@ -32,11 +38,38 @@ const Forniture = () => {
         <Link to={`/cliente/${p.data?.cliente?.id}`} className="text-decoration-none text-reset">{p.value}</Link>
       ),
     },
-    { field: "indirizzo" },
-    { field: "comune" },
-    { field: "provincia" },
-    { field: "cap" },
-    { field: "dataSwitch" },
+    { field: "indirizzo", headerName: "Indirizzo", filter: true },
+    { field: "comune", headerName: "Comune", filter: true },
+    { field: "provincia", headerName: "Provincia", filter: true },
+    { field: "cap", headerName: "CAP" },
+    { field: "bta", headerName: "BTA", filter: true },
+    { field: "tipoPrelievo", headerName: "Prelievo", filter: true },
+    { field: "tipoContatore", headerName: "Contatore", filter: true },
+    { field: "codiceDistributore", headerName: "Distributore", filter: true },
+    {
+      field: "potenzaImpegnata",
+      headerName: "Potenza impegnata kW",
+      type: "numericColumn",
+      valueFormatter: p => formatNumero(p.value),
+    },
+    {
+      field: "potenzaDisponibile",
+      headerName: "Potenza disponibile kW",
+      type: "numericColumn",
+      valueFormatter: p => formatNumero(p.value),
+    },
+    { field: "offerta.nome", headerName: "Offerta", filter: true, cellRenderer: FornituraOfferta },
+    { field: "fatturazione", headerName: "Fatturazione", filter: true },
+    { field: "iva", headerName: "IVA %", type: "numericColumn", valueFormatter: p => formatNumero(p.value) },
+    {
+      field: "rettificaProgrammazione",
+      headerName: "Rettifica €/mese",
+      type: "numericColumn",
+      valueFormatter: p => formatEuro(p.value),
+    },
+    { field: "fornitore", headerName: "Fornitore", filter: true },
+    { field: "dataSwitch", headerName: "Data switch", filter: true, valueFormatter: p => formatData(p.value) },
+    { field: "dataSwitchOut", headerName: "Data switch out", filter: true, valueFormatter: p => formatData(p.value) },
   ]);
 
   const autoSizeStrategy = {
@@ -52,10 +85,11 @@ const Forniture = () => {
       setRowData(response.data.content);
     };
 
-    if (!showAddFornituraModal && !showDeleteFornituraModal) {
+    // ricaricate anche alla chiusura della modifica o del cambio offerta (pulsanti nella colonna Offerta)
+    if (!showAddFornituraModal && !showDeleteFornituraModal && !showAddOffertaModal && !cambioOfferta) {
       fetchForniture();
     }
-  }, [showAddFornituraModal, showDeleteFornituraModal, token]);
+  }, [showAddFornituraModal, showDeleteFornituraModal, showAddOffertaModal, cambioOfferta, token]);
 
   useEffect(() => {
     if (!token) {
@@ -75,7 +109,12 @@ const Forniture = () => {
           </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}
-            <AgGridReact rowData={rowData} columnDefs={colDefs} autoSizeStrategy={autoSizeStrategy} />
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={colDefs}
+              autoSizeStrategy={autoSizeStrategy}
+              enableCellTextSelection={true}
+            />
           </div>
         </div>
       </Container>
