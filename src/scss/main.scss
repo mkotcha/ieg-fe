@@ -48,3 +48,7 @@ body {
   border: none !important;
   outline: none;
 }
+// voci del confronto con il fornitore fuori tolleranza
+.ag-theme-quartz-dark .riga-anomala {
+  background-color: rgba(220, 53, 69, 0.22);
+}

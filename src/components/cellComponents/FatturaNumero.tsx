@@ -1,6 +1,7 @@
 import type { ICellRendererParams } from "ag-grid-community";
 import axios from "axios";
 import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../../redux/hooks";
 import type { Fattura } from "../../types";
 
@@ -45,7 +46,13 @@ const FatturaNumero = (params: ICellRendererParams<Fattura>) => {
     <>
       <div className="d-flex">
         <div>{params.data?.numeroFattura} </div>
-        <Button size="sm" variant="success" onClick={fetchXlsx} className="ms-auto me-1 border border-0">
+        <Link
+          to={`/fatture/${params.data?.numeroFattura}/confronto`}
+          className="btn btn-sm btn-secondary ms-auto me-1 border border-0"
+          title="confronto con il fornitore">
+          <i className="bi bi-arrow-left-right"></i>
+        </Link>
+        <Button size="sm" variant="success" onClick={fetchXlsx} className="me-1 border border-0">
           <i className="bi bi-table"></i>
         </Button>
         <Button size="sm" variant="danger" onClick={fetchPdf} className="ms-1 border border-0">

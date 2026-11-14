@@ -209,3 +209,135 @@ export interface PagedResponse<T> {
   totalElements?: number;
   page?: { totalElements: number };
 }
+
+/** Bolletta del fornitore all'ingrosso verso IEG, importata dal csv di riepilogo. */
+export interface FatturaFornitore {
+  id: number;
+  numero: string;
+  dataEmissione: string | null;
+  dataScadenza: string | null;
+  nomeFile: string | null;
+  dataImport: string;
+  righe: number;
+  totaleImponibile: number;
+}
+
+/** Esito di POST /fatture-fornitore/upload, una per bolletta del file. */
+export interface EsitoImportFatturaFornitore {
+  numero: string;
+  dataEmissione: string | null;
+  nomeFile: string;
+  /** la bolletta era già stata importata e le sue righe sono state sostituite */
+  sostituita: boolean;
+  righe: number;
+  righeScartate: number;
+  totaleImponibile: number;
+  podSconosciuti: string[];
+  righeNonMappate: number;
+}
+
+export type VoceConfronto =
+  | "ENERGIA_F1"
+  | "ENERGIA_F2"
+  | "ENERGIA_F3"
+  | "PERDITE_F1"
+  | "PERDITE_F2"
+  | "PERDITE_F3"
+  | "COMMERCIALIZZAZIONE"
+  | "DISPACCIAMENTO"
+  | "QUOTE_FISSE_DISPACCIAMENTO"
+  | "DISTRIBUZIONE"
+  | "TRASMISSIONE"
+  | "QUOTE_FISSE_RETE"
+  | "QUOTE_POTENZA_RETE"
+  | "UC3"
+  | "UC6"
+  | "ASOS_ENERGIA"
+  | "ASOS_FISSA"
+  | "ASOS_POTENZA"
+  | "ARIM_ENERGIA"
+  | "ARIM_FISSA"
+  | "ARIM_POTENZA"
+  | "REATTIVA_33"
+  | "REATTIVA_75"
+  | "REATTIVA_IMMESSA"
+  | "ACCISE"
+  | "ALTRE_PARTITE"
+  | "COSTI_IEG"
+  | "NON_MAPPATA";
+
+/** Una voce confrontata: differenze = nostro - fornitore; quantità null dove non hanno senso (quote fisse). */
+export interface ConfrontoVoce {
+  voce: VoceConfronto;
+  descrizione: string;
+  /** costo girato al cliente così com'è: nostro e fornitore devono coincidere */
+  passante: boolean;
+  quantitaNostra: number | null;
+  importoNostro: number;
+  quantitaFornitore: number | null;
+  importoFornitore: number;
+  differenzaQuantita: number | null;
+  differenzaImporto: number;
+  anomala: boolean;
+}
+
+export interface ConfrontoFornitura {
+  pod: string;
+  bta: string | null;
+  btaFornitore: string | null;
+  potenzaImpegnata: number | null;
+  potenzaImpegnataFornitore: number | null;
+  bolletteFornitore: string[];
+  /** tra le righe del fornitore ci sono ricalcoli (storni e rifatturazioni) */
+  conguagli: boolean;
+  totaleNostro: number;
+  totaleFornitore: number;
+  margine: number;
+  differenzaPassanti: number;
+  anomalie: string[];
+  voci: ConfrontoVoce[];
+}
+
+/** Confronto di una fattura; forniture è null nel riepilogo del mese. */
+export interface ConfrontoFattura {
+  numeroFattura: string;
+  clienteId: number;
+  ragioneSociale: string;
+  mese: number;
+  anno: number;
+  totaleNostro: number;
+  totaleFornitore: number;
+  margine: number;
+  /** somma delle differenze sulle voci passanti: dovrebbe essere ~0 */
+  differenzaPassanti: number;
+  anomalie: number;
+  forniture: ConfrontoFornitura[] | null;
+}
+
+export interface PodSenzaFattura {
+  pod: string;
+  inAnagrafica: boolean;
+  importoFornitore: number;
+}
+
+/** GET /fatture/confronto?mese=&anno= */
+export interface ConfrontoMese {
+  mese: number;
+  anno: number;
+  /** ci sono righe del fornitore per il mese (altrimenti la bolletta non è ancora importata) */
+  datiFornitore: boolean;
+  totaleNostro: number;
+  totaleFornitore: number;
+  margine: number;
+  differenzaPassanti: number;
+  /** costi del fornitore verso IEG non legati a un cliente (prepayment, mora, bollo...) */
+  costiIeg: number;
+  fatture: ConfrontoFattura[];
+  podSenzaFattura: PodSenzaFattura[];
+}
+
+export interface TariffaNonMappata {
+  codTariffa: string | null;
+  nrArticolo: string | null;
+  descrizione: string | null;
+}

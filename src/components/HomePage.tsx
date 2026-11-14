@@ -5,6 +5,7 @@ import { Alert, Button, Container, Form, Spinner, Table } from "react-bootstrap"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
+import ConfrontoFornitore from "./ConfrontoFornitore";
 import type { Cliente, EsitoFattura, Fattura, Fornitura, LetturaMancante, PagedResponse } from "../types";
 
 const HomePage = () => {
@@ -225,6 +226,8 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+
+      <ConfrontoFornitore mese={Number(mese)} anno={Number(anno)} />
     </Container>
   );
 };
