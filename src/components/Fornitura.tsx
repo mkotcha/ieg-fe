@@ -14,6 +14,7 @@ import type { Fattura, FatturaSingola, Fornitura as FornituraType, Offerta } fro
 import { erroreApi } from "../utils/erroreApi";
 import { formatEuro, formatNumero, NOMI_MESI } from "../utils/formato";
 import FatturaNumero from "./cellComponents/FatturaNumero";
+import ConsumiMensili from "./ConsumiMensili";
 
 /** Riga della tabella fatture: la fattura del cliente con la parte di questa fornitura. */
 type FatturaFornitura = Fattura & { singola: FatturaSingola };
@@ -334,6 +335,8 @@ const Fornitura = () => {
           </Col>
         </Row>
       )}
+
+      {id && <ConsumiMensili percorso={`/forniture/${id}/consumi`} />}
 
       <div className="border rounded-3 bg-body-tertiary mb-3">
         <h3 className="m-2">Ultime fatture</h3>

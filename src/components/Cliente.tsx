@@ -8,6 +8,7 @@ import { Button, Container, Form } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import FatturaNumero from "./cellComponents/FatturaNumero";
 import FornituraOfferta from "./cellComponents/FornituraOfferta";
+import ConsumiMensili from "./ConsumiMensili";
 import { useNavigate } from "react-router-dom";
 import ClienteTipo from "./cellComponents/ClienteTipo";
 import FornituraPod from "./cellComponents/FornituraPod";
@@ -338,6 +339,12 @@ const Cliente = () => {
             />
           </div>
         </div>
+        {id && (
+          <ConsumiMensili
+            percorso={`/clienti/${id}/consumi`}
+            titolo={rowDataForniture.length > 1 ? `Andamento consumi - ${rowDataForniture.length} POD` : undefined}
+          />
+        )}
         <div className="border rounded-3 bg-body-tertiary">
           <div className="d-flex align-items-center">
             <h3 className="m-2">Fatture</h3>

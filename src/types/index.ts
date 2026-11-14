@@ -400,3 +400,23 @@ export interface EsitoImportLetture {
   errori: number;
   podSconosciuti: string[];
 }
+
+/** GET /forniture/{pod}/consumi: consumo attivo di un mese per fascia (kWh, senza perdite), dalle letture. */
+export interface ConsumoMensile {
+  mese: number;
+  anno: number;
+  f1: number;
+  f2: number;
+  f3: number;
+  totale: number;
+  /** lettura di partenza */
+  dal: string;
+  /** lettura di arrivo */
+  al: string;
+  /** le letture sono proprio a fine mese precedente e a fine mese (per un cliente: per tutti i pod) */
+  completo: boolean;
+  /** pod con consumo nel mese (1 per una fornitura) */
+  forniture: number;
+  /** pod considerati: per un cliente tutti i suoi */
+  fornitureTotali: number;
+}
