@@ -42,6 +42,8 @@ export interface Fornitura {
   tipoPrelievo: TipoPrelievo;
   cap: string;
   offerta?: Offerta | null;
+  /** € al mese sulla riga "Rettifica oneri di programmazione", negativo = restituzione; null = nessuna */
+  rettificaProgrammazione?: number | null;
 }
 
 export interface Lettura {

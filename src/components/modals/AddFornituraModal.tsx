@@ -30,6 +30,7 @@ const AddFornituraModal = () => {
     tipoContatore: "ORARIO",
     tipoPrelievo: "BT",
     cap: "",
+    rettificaProgrammazione: "",
   });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -81,6 +82,7 @@ const AddFornituraModal = () => {
       tipoContatore: "ORARIO",
       tipoPrelievo: "BT",
       cap: "",
+      rettificaProgrammazione: "",
     });
   };
 
@@ -124,6 +126,7 @@ const AddFornituraModal = () => {
           tipoContatore: data.tipoContatore || "ORARIO",
           tipoPrelievo: data.tipoPrelievo || "BT",
           cap: data.cap ?? "",
+          rettificaProgrammazione: data.rettificaProgrammazione ?? "",
         });
       };
       fetchFornitura();
@@ -256,6 +259,17 @@ const AddFornituraModal = () => {
             <Form.Group as={Col} className="mb-3" controlId="iva">
               <Form.Label>IVA</Form.Label>
               <Form.Control type="number" step="0.01" value={fornitura.iva} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group as={Col} className="mb-3" controlId="rettificaProgrammazione">
+              <Form.Label>Rettifica oneri programmazione €/mese</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                placeholder="nessuna"
+                title="importo fisso mensile, negativo per restituire somme addebitate in più; vuoto = nessuna"
+                value={fornitura.rettificaProgrammazione}
+                onChange={handleChange}
+              />
             </Form.Group>
           </Row>
 
