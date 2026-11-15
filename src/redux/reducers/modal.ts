@@ -20,6 +20,7 @@ import {
   SHOW_ADD_FORNITURA_MODAL,
   HIDE_ADD_FORNITURA_MODAL,
   SHOW_NUOVA_FORNITURA_CLIENTE_MODAL,
+  SHOW_NUOVA_FORNITURA_DATI_MODAL,
   SHOW_DELETE_FORNITURA_MODAL,
   HIDE_DELETE_FORNITURA_MODAL,
   SHOW_ADD_OFFERTA_MODAL,
@@ -57,6 +58,8 @@ export interface ModalState {
   modFornituraId: string | null;
   /** cliente preselezionato nella nuova fornitura */
   nuovaFornituraClienteId: number | null;
+  /** campi precompilati della nuova fornitura */
+  nuovaFornituraDati: Record<string, string | number> | null;
   showDeleteFornituraModal: boolean;
   deleteFornituraId: string | null;
   showAddOffertaModal: boolean;
@@ -99,6 +102,7 @@ const initialState: ModalState = {
   showAddFornituraModal: false,
   modFornituraId: null,
   nuovaFornituraClienteId: null,
+  nuovaFornituraDati: null,
   showDeleteFornituraModal: false,
   deleteFornituraId: null,
   showAddOffertaModal: false,
@@ -228,6 +232,7 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddFornituraModal: true,
         modFornituraId: action.payload as string,
         nuovaFornituraClienteId: null,
+        nuovaFornituraDati: null,
       };
     case SHOW_NUOVA_FORNITURA_CLIENTE_MODAL:
       return {
@@ -235,6 +240,15 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddFornituraModal: true,
         modFornituraId: null,
         nuovaFornituraClienteId: action.payload as number,
+        nuovaFornituraDati: null,
+      };
+    case SHOW_NUOVA_FORNITURA_DATI_MODAL:
+      return {
+        ...state,
+        showAddFornituraModal: true,
+        modFornituraId: null,
+        nuovaFornituraClienteId: null,
+        nuovaFornituraDati: action.payload as Record<string, string | number>,
       };
     case HIDE_ADD_FORNITURA_MODAL:
       return {
@@ -242,6 +256,7 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddFornituraModal: false,
         modFornituraId: null,
         nuovaFornituraClienteId: null,
+        nuovaFornituraDati: null,
       };
     case SHOW_DELETE_FORNITURA_MODAL:
       return {

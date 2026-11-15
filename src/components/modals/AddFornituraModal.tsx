@@ -1,4 +1,4 @@
-import { Modal, Form, Row, Col, Button } from "react-bootstrap";
+import { Alert, Modal, Form, Row, Col, Button } from "react-bootstrap";
 import { hideAddFornituraModalAction } from "../../redux/actions";
 import { useEffect, type ChangeEvent, type FormEvent } from "react";
 import axios from "axios";
@@ -10,6 +10,7 @@ const AddFornituraModal = () => {
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const modFornituraId = useAppSelector(state => state.modal.modFornituraId);
   const nuovaFornituraClienteId = useAppSelector(state => state.modal.nuovaFornituraClienteId);
+  const nuovaFornituraDati = useAppSelector(state => state.modal.nuovaFornituraDati);
   const token = useAppSelector(state => state.auth.token);
   const dispatch = useAppDispatch();
   const [listaClienti, setListaClienti] = useState<Cliente[]>([]);
@@ -137,9 +138,13 @@ const AddFornituraModal = () => {
       if (nuovaFornituraClienteId) {
         setFornitura(prevState => ({ ...prevState, idCliente: String(nuovaFornituraClienteId) }));
       }
+      // dati proposti (es. dal riepilogo del fornitore): sostituiscono i valori predefiniti
+      if (nuovaFornituraDati) {
+        setFornitura(prevState => ({ ...prevState, ...nuovaFornituraDati }));
+      }
     }
     // a ogni apertura: senza showAddFornituraModal una seconda nuova fornitura ritroverebbe i dati della prima
-  }, [modFornituraId, nuovaFornituraClienteId, showAddFornituraModal, token]);
+  }, [modFornituraId, nuovaFornituraClienteId, nuovaFornituraDati, showAddFornituraModal, token]);
 
   return (
     <Modal
@@ -157,6 +162,12 @@ const AddFornituraModal = () => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {nuovaFornituraDati && !modFornituraId && (
+          <Alert variant="info" className="py-2 small">
+            POD, BTA, potenze, tipo prelievo, distributore e data switch (apertura dell&apos;utenza) sono proposti dal
+            riepilogo del fornitore: controllali e completa cliente, indirizzo e IVA, che il riepilogo non contiene.
+          </Alert>
+        )}
         <Form onSubmit={handlePost}>
           {!modFornituraId && (
             <Form.Group className="mb-3" controlId="id">

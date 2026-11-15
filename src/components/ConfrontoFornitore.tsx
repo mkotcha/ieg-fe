@@ -4,12 +4,14 @@ import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Form, Spinner, Table } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { showNuovaFornituraDatiModalAction } from "../redux/actions";
 import type {
   ConfrontoFattura,
   ConfrontoMese,
   EsitoImportFatturaFornitore,
   FatturaFornitore,
+  PodNonRegistrato,
   TariffaNonMappata,
 } from "../types";
 import { erroreApi } from "../utils/erroreApi";
@@ -32,6 +34,10 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
   const [confronto, setConfronto] = useState<ConfrontoMese | null>(null);
   const [bollette, setBollette] = useState<FatturaFornitore[]>([]);
   const [nonMappate, setNonMappate] = useState<TariffaNonMappata[]>([]);
+  // pod nelle righe del fornitore del mese ma non in anagrafica, con i dati per registrarli
+  const [podNonRegistrati, setPodNonRegistrati] = useState<PodNonRegistrato[]>([]);
+  const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
+  const dispatch = useAppDispatch();
   const [caricamento, setCaricamento] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
   const [upload, setUpload] = useState(false);
@@ -45,14 +51,18 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
     setErrore(null);
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      const [c, b, n] = await Promise.all([
+      const [c, b, n, p] = await Promise.all([
         axios.get<ConfrontoMese>(`${api}/fatture/confronto?mese=${mese}&anno=${anno}`, { headers }),
         axios.get<FatturaFornitore[]>(`${api}/fatture-fornitore`, { headers }),
         axios.get<TariffaNonMappata[]>(`${api}/fatture-fornitore/mappature/non-mappate`, { headers }),
+        axios.get<PodNonRegistrato[]>(`${api}/fatture-fornitore/pod-non-registrati?mese=${mese}&anno=${anno}`, {
+          headers,
+        }),
       ]);
       setConfronto(c.data);
       setBollette(b.data);
       setNonMappate(n.data);
+      setPodNonRegistrati(p.data);
     } catch (error) {
       setErrore(erroreApi(error, "Errore nel caricamento del confronto con il fornitore"));
     } finally {
@@ -60,9 +70,23 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
     }
   }, [api, anno, mese, token]);
 
+  // ricaricato anche alla chiusura della finestra fornitura (un pod appena registrato esce dall'elenco)
   useEffect(() => {
-    if (token) carica();
-  }, [carica, token]);
+    if (token && !showAddFornituraModal) carica();
+  }, [carica, token, showAddFornituraModal]);
+
+  // apre la nuova fornitura con i dati proposti dal riepilogo del fornitore
+  const registra = (p: PodNonRegistrato) => {
+    const dati: Record<string, string | number> = { id: p.pod, fatturazione: "MENSILE" };
+    if (p.bta) dati.bta = p.bta;
+    if (p.tipoPrelievo) dati.tipoPrelievo = p.tipoPrelievo;
+    if (p.codiceDistributore) dati.codiceDistributore = p.codiceDistributore;
+    if (p.potenzaImpegnata != null) dati.potenzaImpegnata = p.potenzaImpegnata;
+    if (p.potenzaDisponibile != null) dati.potenzaDisponibile = p.potenzaDisponibile;
+    if (p.dataApertura) dati.dataSwitch = p.dataApertura;
+    dispatch(showNuovaFornituraDatiModalAction(dati));
+  };
+  const nonRegistrato = (pod: string) => podNonRegistrati.find(p => p.pod === pod);
 
   const caricaFile = async () => {
     const file = fileRef.current?.files?.[0];
@@ -145,6 +169,18 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
     },
   ]);
 
+  // altezza della tabella: si adatta alle righe fino al 60% della finestra (almeno 300px), oltre scorre all'interno
+  const [dimensioniRiga, setDimensioniRiga] = useState({ riga: 42, intestazione: 48 });
+  const [altezzaFinestra, setAltezzaFinestra] = useState(() => window.innerHeight);
+  useEffect(() => {
+    const aggiorna = () => setAltezzaFinestra(window.innerHeight);
+    window.addEventListener("resize", aggiorna);
+    return () => window.removeEventListener("resize", aggiorna);
+  }, []);
+  const altezzaMassima = Math.max(300, Math.round(altezzaFinestra * 0.6));
+  const righeEntrano =
+    dimensioniRiga.intestazione + (confronto?.fatture.length ?? 0) * dimensioniRiga.riga + 2 <= altezzaMassima;
+
   const fattureConAnomalie = confronto?.fatture.filter(f => f.anomalie > 0).length ?? 0;
   const nomeMese = NOMI_MESI[mese - 1];
 
@@ -208,10 +244,15 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                   etichettaAnomalie={`Fatture con anomalie su ${confronto.fatture.length}`}
                   costiIeg={confronto.costiIeg}
                 />
-                <div className="ag-theme-quartz-dark mt-2" style={{ height: 420 }}>
+                <div className="ag-theme-quartz-dark mt-2" style={righeEntrano ? undefined : { height: altezzaMassima }}>
                   <AgGridReact
                     rowData={confronto.fatture}
                     columnDefs={colDefs}
+                    domLayout={righeEntrano ? "autoHeight" : "normal"}
+                    onGridReady={e => {
+                      const dimensioni = e.api.getSizesForCurrentTheme();
+                      setDimensioniRiga({ riga: dimensioni.rowHeight, intestazione: dimensioni.headerHeight });
+                    }}
                     autoSizeStrategy={{ type: "fitCellContents" }}
                     enableCellTextSelection={true}
                     onRowDoubleClicked={e => e.data && navigate(`/fatture/${e.data.numeroFattura}/confronto`)}
@@ -226,6 +267,7 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                   <thead>
                     <tr>
                       <th>POD</th>
+                      <th>Cliente</th>
                       <th>In anagrafica</th>
                       <th className="text-end">Importo fornitore €</th>
                     </tr>
@@ -242,7 +284,33 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                             p.pod
                           )}
                         </td>
-                        <td>{p.inAnagrafica ? "sì" : "no"}</td>
+                        <td>
+                          {p.clienteId ? (
+                            <Link to={`/cliente/${p.clienteId}`} className="text-decoration-none text-reset">
+                              {p.ragioneSociale}
+                            </Link>
+                          ) : (
+                            <span className="text-body-secondary">-</span>
+                          )}
+                        </td>
+                        <td>
+                          {p.inAnagrafica ? (
+                            "sì"
+                          ) : (
+                            <>
+                              no
+                              {nonRegistrato(p.pod) && (
+                                <Button
+                                  size="sm"
+                                  variant="outline-primary"
+                                  className="ms-2 py-0"
+                                  onClick={() => registra(nonRegistrato(p.pod)!)}>
+                                  registra
+                                </Button>
+                              )}
+                            </>
+                          )}
+                        </td>
                         <td className="text-end">{formatEuro(p.importoFornitore)}</td>
                       </tr>
                     ))}
@@ -251,6 +319,46 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
               </div>
             )}
           </>
+        )}
+        {podNonRegistrati.length > 0 && (
+          <div className="mt-3">
+            <Alert variant="warning" className="py-2 mb-1">
+              {podNonRegistrati.length} POD presenti nel riepilogo del fornitore di {nomeMese} {anno} non sono in
+              anagrafica: registrali con i dati proposti dal riepilogo (da completare con cliente e indirizzo).
+            </Alert>
+            <Table size="sm" striped bordered className="w-auto small">
+              <thead>
+                <tr>
+                  <th>POD</th>
+                  <th>BTA</th>
+                  <th>Prelievo</th>
+                  <th className="text-end">Pot. impegnata kW</th>
+                  <th className="text-end">Pot. disponibile kW</th>
+                  <th>Apertura utenza</th>
+                  <th className="text-end">Importo fornitore €</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {podNonRegistrati.map(p => (
+                  <tr key={p.pod}>
+                    <td className="font-monospace">{p.pod}</td>
+                    <td>{p.bta ?? "-"}</td>
+                    <td>{p.tipoPrelievo ?? "-"}</td>
+                    <td className="text-end">{p.potenzaImpegnata ?? "-"}</td>
+                    <td className="text-end">{p.potenzaDisponibile ?? "-"}</td>
+                    <td>{p.dataApertura ? new Date(p.dataApertura).toLocaleDateString("it-IT") : "-"}</td>
+                    <td className="text-end">{formatEuro(p.importoFornitore)}</td>
+                    <td>
+                      <Button size="sm" variant="outline-primary" className="py-0" onClick={() => registra(p)}>
+                        registra
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         )}
         {bollette.length > 0 && (
           <div className="small text-body-secondary mt-2">

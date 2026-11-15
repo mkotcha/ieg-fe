@@ -341,6 +341,9 @@ export interface ConfrontoFattura {
 export interface PodSenzaFattura {
   pod: string;
   inAnagrafica: boolean;
+  /** null se il pod non è in anagrafica */
+  clienteId: number | null;
+  ragioneSociale: string | null;
   importoFornitore: number;
 }
 
@@ -437,4 +440,20 @@ export interface FatturaElenco {
   totaleIva: number | null;
   /** null per le fatture generate prima del campo */
   totaleDaPagare: number | null;
+}
+
+/** GET /fatture-fornitore/pod-non-registrati: pod del riepilogo del fornitore non in anagrafica, con i dati proposti. */
+export interface PodNonRegistrato {
+  pod: string;
+  bta: Bta | null;
+  potenzaImpegnata: number | null;
+  potenzaDisponibile: number | null;
+  tipoPrelievo: TipoPrelievo | null;
+  codiceDistributore: CodiceDistributore | null;
+  /** apertura dell'utenza presso il fornitore: proposta come data di switch */
+  dataApertura: string | null;
+  ultimoMese: number;
+  ultimoAnno: number;
+  importoFornitore: number;
+  bollette: string[];
 }
