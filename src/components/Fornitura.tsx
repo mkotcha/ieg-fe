@@ -1,5 +1,5 @@
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import axios from "axios";
 import { useEffect, useState, type ReactNode } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
@@ -10,16 +10,55 @@ import {
   showNuovaOffertaFornituraModalAction,
 } from "../redux/actions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import type { Fattura, FatturaSingola, Fornitura as FornituraType, Offerta } from "../types";
+import type { Fattura, FatturaSingola, Fornitura as FornituraType, Lettura, Offerta } from "../types";
 import { erroreApi } from "../utils/erroreApi";
 import { formatEuro, formatNumero, NOMI_MESI } from "../utils/formato";
 import FatturaNumero from "./cellComponents/FatturaNumero";
+import PulsantiLettura from "./cellComponents/PulsantiLettura";
 import ConsumiMensili from "./ConsumiMensili";
 
 /** Riga della tabella fatture: la fattura del cliente con la parte di questa fornitura. */
 type FatturaFornitura = Fattura & { singola: FatturaSingola };
 
 const ULTIME_FATTURE = 12;
+// date di lettura (iniziale o finale di una fattura) mostrate nella tabella delle letture
+const ULTIME_LETTURE = 6;
+
+const colonnaLettura = (field: keyof Lettura, headerName: string): ColDef<Lettura> => ({
+  field,
+  headerName,
+  type: "rightAligned",
+  valueFormatter: p => formatNumero(p.value, 3),
+});
+
+/** Data della lettura con i pulsanti attiva/disattiva, modifica ed elimina. */
+const LetturaData = (params: ICellRendererParams<Lettura>) => (
+  <div className="d-flex">
+    <div className="me-auto pe-2">
+      {params.data?.dataLettura ? new Date(params.data.dataLettura).toLocaleDateString("it-IT") : ""}
+    </div>
+    <PulsantiLettura lettura={params.data} ricarica={(params.context as { ricarica?: () => void } | undefined)?.ricarica} />
+  </div>
+);
+
+const COLONNE_LETTURE: ColDef<Lettura>[] = [
+  { field: "dataLettura", headerName: "Data", cellRenderer: LetturaData },
+  // booleani: la tabella li mostra come caselle
+  { field: "attiva", headerName: "Attiva" },
+  { field: "tipoLettura", headerName: "Tipo" },
+  { field: "raccolta", headerName: "Raccolta" },
+  { field: "manuale", headerName: "Manuale", headerTooltip: "inserita o corretta a mano, non arriva dal fornitore" },
+  colonnaLettura("eaF1", "EaF1"),
+  colonnaLettura("eaF2", "EaF2"),
+  colonnaLettura("eaF3", "EaF3"),
+  colonnaLettura("erF1", "ErF1"),
+  colonnaLettura("erF2", "ErF2"),
+  colonnaLettura("erF3", "ErF3"),
+  colonnaLettura("potF1", "PotF1"),
+  colonnaLettura("potF2", "PotF2"),
+  colonnaLettura("potF3", "PotF3"),
+  { field: "note", headerName: "Note" },
+];
 
 const formatData = (d: string | null | undefined) => (d ? new Date(d).toLocaleDateString("it-IT") : "");
 const siNo = (b: boolean | null | undefined) => (b ? "Sì" : "No");
@@ -59,9 +98,15 @@ const Fornitura = () => {
   const { id } = useParams();
   const [fornitura, setFornitura] = useState<FornituraType | null>(null);
   const [fatture, setFatture] = useState<FatturaFornitura[]>([]);
+  const [letture, setLetture] = useState<Lettura[]>([]);
   const token = useAppSelector(state => state.auth.token);
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
+  const showAddLetturaModal = useAppSelector(state => state.modal.showAddLetturaModal);
+  const showDeleteLetturaModal = useAppSelector(state => state.modal.showDeleteLetturaModal);
+  // cambia a ogni attivazione/disattivazione dalla tabella, per ricaricare le letture
+  const [aggiornamentoLetture, setAggiornamentoLetture] = useState(0);
+  const [contextLetture] = useState({ ricarica: () => setAggiornamentoLetture(n => n + 1) });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // cambio offerta: elenco delle offerte caricato solo quando serve
@@ -121,6 +166,17 @@ const Fornitura = () => {
     };
     carica();
   }, [id, token, showAddFornituraModal, showAddOffertaModal]);
+
+  // letture delle date usate dalle fatture (anche disattivate e copie manuali): ricaricate alla chiusura delle modali lettura e a ogni attiva/disattiva
+  useEffect(() => {
+    if (!token || showAddLetturaModal || showDeleteLetturaModal) return;
+    const carica = async () => {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/forniture/${id}/letture?numero=${ULTIME_LETTURE}`;
+      const response = await axios.get<Lettura[]>(url, { headers: { Authorization: `Bearer ${token}` } });
+      setLetture(response.data);
+    };
+    carica();
+  }, [id, token, showAddLetturaModal, showDeleteLetturaModal, aggiornamentoLetture]);
 
   useEffect(() => {
     if (!token) {
@@ -348,6 +404,30 @@ const Fornitura = () => {
       )}
 
       {id && <ConsumiMensili percorso={`/forniture/${id}/consumi`} />}
+
+      <div className="border rounded-3 bg-body-tertiary mb-3">
+        <div className="d-flex align-items-center">
+          <h3 className="m-2 me-auto">Letture usate per le fatture</h3>
+          <Link to={`/letture/${id}`} className="me-2">
+            tutte le letture
+          </Link>
+        </div>
+        {letture.length === 0 ? (
+          <div className="m-2">Nessuna lettura fatturata per questa fornitura.</div>
+        ) : (
+          <div className="ag-theme-quartz-dark">
+            <AgGridReact
+              rowData={letture}
+              columnDefs={COLONNE_LETTURE}
+              context={contextLetture}
+              rowClassRules={{ "opacity-50": p => p.data?.attiva === false }}
+              autoSizeStrategy={{ type: "fitCellContents" }}
+              domLayout="autoHeight"
+              enableCellTextSelection={true}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="border rounded-3 bg-body-tertiary mb-3">
         <h3 className="m-2">Ultime fatture</h3>

@@ -27,6 +27,14 @@ const Letture = () => {
   const [colDefs] = useState<ColDef<Lettura>[]>([
     { field: "fornitura.id", headerName: "POD", cellRenderer: LetturaPod, filter: true },
     { field: "dataLettura", headerName: "data", filter: true },
+    // booleani: la tabella li mostra come caselle
+    { field: "attiva", headerName: "Attiva", filter: true },
+    {
+      field: "manuale",
+      headerName: "Manuale",
+      headerTooltip: "inserita o corretta a mano, non arriva dal fornitore",
+      filter: true,
+    },
     { field: "tipoContatore", headerName: "Trattamento", filter: true },
     { field: "raccolta", headerName: "Raccolta" },
     { field: "tipoDato", headerName: "Tipo dato" },
@@ -125,6 +133,10 @@ const Letture = () => {
     }
   }, [gridApi, pod]);
 
+  // cambia a ogni attivazione/disattivazione dalla tabella, per ricaricare le letture
+  const [aggiornamento, setAggiornamento] = useState(0);
+  const [context] = useState({ ricarica: () => setAggiornamento(n => n + 1) });
+
   useEffect(() => {
     const fetchLetture = async () => {
       const url = `${import.meta.env.VITE_REACT_APP_API_URL}/letture?size=10000&sort=dataLettura,desc`;
@@ -135,7 +147,7 @@ const Letture = () => {
     };
 
     if (!showAddLetturaModal && !showDeleteLetturaModal) fetchLetture();
-  }, [showAddLetturaModal, showDeleteLetturaModal, token]);
+  }, [showAddLetturaModal, showDeleteLetturaModal, token, aggiornamento]);
 
   useEffect(() => {
     if (!token) {
@@ -168,6 +180,8 @@ const Letture = () => {
               suppressColumnVirtualisation={true}
               rowData={rowData}
               columnDefs={colDefs}
+              context={context}
+              rowClassRules={{ "opacity-50": p => p.data?.attiva === false }}
               localeText={localeIt}
               pagination={true}
               enableCellTextSelection={true}

@@ -50,6 +50,10 @@ export interface Lettura {
   id: number;
   fornitura: Fornitura;
   dataLettura: string;
+  /** false = conservata ma esclusa dai calcoli */
+  attiva: boolean;
+  /** inserita o corretta a mano (non arriva dai flussi del fornitore) */
+  manuale: boolean;
   tipoLettura?: TipoLettura;
   tipoContatore: TipoContatore;
   tipoDato: TipoDato;

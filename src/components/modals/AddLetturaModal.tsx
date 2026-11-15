@@ -1,4 +1,4 @@
-import { Button, Form, Modal } from "react-bootstrap";
+import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { hideAddLetturaModalAction } from "../../redux/actions";
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import axios from "axios";
@@ -137,6 +137,12 @@ const AddLetturaModal = () => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handlePost}>
+          {modLetturaId && lettura.id && !lettura.manuale && (
+            <Alert variant="info">
+              Lettura del fornitore: i valori originali non vengono sovrascritti. La modifica crea una lettura manuale
+              attiva e disattiva questa.
+            </Alert>
+          )}
           {!modLetturaId && (
             <Form.Group controlId="pod" className="mb-3">
               <Form.Label>POD</Form.Label>
