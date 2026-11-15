@@ -1,5 +1,5 @@
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef } from "ag-grid-community";
 import { useEffect, useState } from "react";
 import { Button, Container } from "react-bootstrap";
 import axios from "axios";
@@ -16,7 +16,18 @@ const AltrePartite = () => {
   const showAddAltraPartitaModal = useAppSelector(state => state.modal.showAddAltraPartitaModal);
   const showDeleteAltraPartitaModal = useAppSelector(state => state.modal.showDeleteAltraPartitaModal);
   const [rowData, setRowData] = useState<AltraPartita[]>([]);
+  // cambia per ricaricare le partite (es. dopo un errore nell'attivazione)
+  const [aggiornamento, setAggiornamento] = useState(0);
   const [colDefs] = useState<ColDef<AltraPartita>[]>([
+    {
+      field: "attiva",
+      headerName: "Attiva",
+      headerTooltip: "le partite non attive restano in archivio ma non vanno in fattura",
+      // casella cliccabile: il cambio viene salvato subito (onCellValueChanged)
+      cellDataType: "boolean",
+      editable: true,
+      filter: true,
+    },
     { field: "fornitura.id", headerName: "POD", filter: true, cellRenderer: AltraPartitaPod },
     { field: "fornitura.cliente.ragioneSociale", headerName: "Cliente", filter: true },
     { field: "mese", headerName: "Mese", type: "numericColumn", filter: true },
@@ -38,6 +49,18 @@ const AltrePartite = () => {
     },
   ]);
 
+  const cambiaAttiva = async (event: CellValueChangedEvent<AltraPartita>) => {
+    if (event.colDef.field !== "attiva" || !event.data) return;
+    try {
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/altre-partite/${event.data.id}/attiva?attiva=${event.newValue}`;
+      await axios.put(url, null, { headers: { Authorization: `Bearer ${token}` } });
+    } catch (error) {
+      console.error(error);
+      // ricarica per rimettere il valore salvato
+      setAggiornamento(n => n + 1);
+    }
+  };
+
   const autoSizeStrategy = {
     type: "fitCellContents",
   } as const;
@@ -48,10 +71,11 @@ const AltrePartite = () => {
       const response = await axios.get<AltraPartita[]>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRowData(response.data);
+      // dalla più recente: anno e mese di fatturazione, poi l'ultima inserita
+      setRowData([...response.data].sort((a, b) => b.anno - a.anno || b.mese - a.mese || b.id - a.id));
     };
     if (!showAddAltraPartitaModal && !showDeleteAltraPartitaModal) fetchAltrePartite();
-  }, [showAddAltraPartitaModal, showDeleteAltraPartitaModal, token]);
+  }, [showAddAltraPartitaModal, showDeleteAltraPartitaModal, token, aggiornamento]);
 
   useEffect(() => {
     if (!token) {
@@ -76,6 +100,8 @@ const AltrePartite = () => {
             suppressColumnVirtualisation={true}
             rowData={rowData}
             columnDefs={colDefs}
+            onCellValueChanged={cambiaAttiva}
+            rowClassRules={{ "opacity-50": p => p.data?.attiva === false }}
             enableCellTextSelection={true}
             ensureDomOrder={true}
           />

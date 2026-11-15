@@ -207,6 +207,8 @@ export interface AltraPartita {
   importo: number;
   /** se true resta fuori dall'imponibile e si somma solo al totale da pagare */
   esenteIva: boolean;
+  /** false = esclusa dalle fatture ma conservata */
+  attiva: boolean;
   mese: number;
   anno: number;
 }
