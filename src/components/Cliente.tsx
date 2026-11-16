@@ -73,6 +73,7 @@ const Cliente = () => {
     { field: "offerta.pun", headerName: "PUN", valueFormatter: formatBoolOfferta },
     { field: "offerta.capacitaMaggiorazione", headerName: "Maggiorazione capacità", valueFormatter: formatBoolOfferta },
     { field: "offerta.maggiorazione", headerName: "Maggiorazione", type: "numericColumn", valueFormatter: formatNumeroOfferta },
+    { field: "offerta.maggiorazioneSbilanciamento", headerName: "Maggiorazione sbilanciamento", valueFormatter: formatBoolOfferta },
     { field: "offerta.hasSpread", headerName: "Spread attivo", valueFormatter: formatBoolOfferta },
     { field: "offerta.spread", headerName: "Spread", type: "numericColumn", valueFormatter: formatNumeroOfferta },
     { field: "offerta.ocv", headerName: "OCV", type: "numericColumn", valueFormatter: formatNumeroOfferta },

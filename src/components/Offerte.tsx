@@ -30,6 +30,7 @@ const Offerte = () => {
     { field: "pun", headerName: "PUN", valueFormatter: formatBool },
     { field: "capacitaMaggiorazione", headerName: "Maggiorazione capacità", valueFormatter: formatBool },
     { field: "maggiorazione", headerName: "Maggiorazione", type: "numericColumn", valueFormatter: formatNumero },
+    { field: "maggiorazioneSbilanciamento", headerName: "Maggiorazione sbilanciamento", valueFormatter: formatBool },
     { field: "hasSpread", headerName: "Spread attivo", valueFormatter: formatBool },
     { field: "spread", headerName: "Spread", type: "numericColumn", valueFormatter: formatNumero },
     { field: "ocv", headerName: "OCV", type: "numericColumn", valueFormatter: formatNumero },

@@ -350,6 +350,7 @@ const Fornitura = () => {
                         "Maggiorazione capacità",
                         offerta.capacitaMaggiorazione ? `${formatNumero(offerta.maggiorazione, 6)} €/kWh` : "No",
                       ],
+                      ["Maggiorazione sbilanciamento", offerta.maggiorazioneSbilanciamento ? "+0,01 €/kWh" : "No"],
                       [
                         "OCV",
                         `${formatNumero(offerta.ocv, 6)} ${offerta.modalitaProgrammazione === "CLASSIC" ? "% spesa energia" : "€/kWh"}`,

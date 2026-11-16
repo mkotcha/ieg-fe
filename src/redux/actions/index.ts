@@ -33,6 +33,7 @@ export const HIDE_DELETE_FORNITURA_MODAL = "HIDE_DELETE_FORNITURA_MODAL";
 export const SHOW_ADD_OFFERTA_MODAL = "SHOW_ADD_OFFERTA_MODAL";
 export const HIDE_ADD_OFFERTA_MODAL = "HIDE_ADD_OFFERTA_MODAL";
 export const SHOW_NUOVA_OFFERTA_FORNITURA_MODAL = "SHOW_NUOVA_OFFERTA_FORNITURA_MODAL";
+export const SHOW_COPIA_OFFERTA_MODAL = "SHOW_COPIA_OFFERTA_MODAL";
 export const SHOW_CAMBIA_OFFERTA_MODAL = "SHOW_CAMBIA_OFFERTA_MODAL";
 export const HIDE_CAMBIA_OFFERTA_MODAL = "HIDE_CAMBIA_OFFERTA_MODAL";
 export const SHOW_DELETE_OFFERTA_MODAL = "SHOW_DELETE_OFFERTA_MODAL";
@@ -89,6 +90,8 @@ export const showNuovaOffertaFornituraModalAction = (pod: string) => ({
   type: SHOW_NUOVA_OFFERTA_FORNITURA_MODAL,
   payload: pod,
 });
+/** Nuova offerta che parte con tutti i valori dell'offerta id. */
+export const showCopiaOffertaModalAction = (id?: number) => ({ type: SHOW_COPIA_OFFERTA_MODAL, payload: id });
 /** Scelta di un'altra offerta esistente per la fornitura (pod). */
 export const showCambiaOffertaModalAction = (pod: string) => ({ type: SHOW_CAMBIA_OFFERTA_MODAL, payload: pod });
 export const hideCambiaOffertaModalAction = () => ({ type: HIDE_CAMBIA_OFFERTA_MODAL });
