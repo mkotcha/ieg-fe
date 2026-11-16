@@ -1,35 +1,18 @@
 import type { ICellRendererParams } from "ag-grid-community";
-import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { showAddLetturaModalAction, showDeleteLetturaModalAction } from "../../redux/actions";
-import { useAppDispatch } from "../../redux/hooks";
 import type { Lettura } from "../../types";
+import PulsantiLettura from "./PulsantiLettura";
 
-const LetturaPod = (params: ICellRendererParams<Lettura>) => {
-  const dispatch = useAppDispatch();
-  return (
-    <div className="d-flex ">
-      <div className="me-auto ">
-        <Link to={`/fornitura/${params.data?.fornitura?.id}`} className="text-decoration-none text-reset">
-          {params.data?.fornitura?.id}
-        </Link>
-      </div>
-      <Button
-        size="sm"
-        variant="outline-secondary"
-        onClick={() => dispatch(showAddLetturaModalAction(params.data?.id))}
-        className="my-auto me-1">
-        <i className="bi bi-pencil"></i>
-      </Button>
-      <Button
-        size="sm"
-        variant="outline-danger"
-        onClick={() => dispatch(showDeleteLetturaModalAction(params.data?.id))}
-        className="my-auto">
-        <i className="bi bi-trash"></i>
-      </Button>
+/** POD della lettura con i pulsanti attiva/disattiva, modifica ed elimina. */
+const LetturaPod = (params: ICellRendererParams<Lettura>) => (
+  <div className="d-flex ">
+    <div className="me-auto ">
+      <Link to={`/fornitura/${params.data?.fornitura?.id}`} className="text-decoration-none text-reset">
+        {params.data?.fornitura?.id}
+      </Link>
     </div>
-  );
-};
+    <PulsantiLettura lettura={params.data} ricarica={(params.context as { ricarica?: () => void } | undefined)?.ricarica} />
+  </div>
+);
 
 export default LetturaPod;

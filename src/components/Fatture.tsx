@@ -14,7 +14,7 @@ const formatData = (d: string | null | undefined) => (d ? new Date(d).toLocaleDa
 
 /**
  * Tutte le fatture emesse, dalla più recente alla più vecchia (mese di consumo). Il numero apre il confronto con il
- * fornitore della fattura, il cliente la sua pagina; i pulsanti scaricano excel e pdf.
+ * fornitore della fattura, il cliente la sua pagina; il pulsante scarica il pdf.
  */
 const Fatture = () => {
   const token = useAppSelector(state => state.auth.token);

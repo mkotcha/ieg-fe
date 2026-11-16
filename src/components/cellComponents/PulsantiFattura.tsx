@@ -14,20 +14,20 @@ const nomeFile = (header: string | undefined) => {
 };
 
 /**
- * Pulsanti di una fattura nelle celle delle tabelle: confronto con il fornitore (se confronto), excel e pdf.
- * Il pdf si apre in una nuova scheda e viene anche scaricato; l'excel viene scaricato.
+ * Pulsanti di una fattura nelle celle delle tabelle: confronto con il fornitore (se confronto) e pdf.
+ * Il pdf si apre in una nuova scheda e viene anche scaricato.
  */
 const PulsantiFattura = ({ numero, confronto = true }: { numero: string; confronto?: boolean }) => {
   const token = useAppSelector(state => state.auth.token);
 
-  const scarica = async (formato: "pdf" | "xlsx") => {
-    const response = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/fatture/${numero}/${formato}`, {
+  const scaricaPdf = async () => {
+    const response = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/fatture/${numero}/pdf`, {
       headers: { Authorization: `Bearer ${token}` },
       responseType: "blob",
     });
     if (response.status !== 200) return;
     const url = window.URL.createObjectURL(response.data);
-    if (formato === "pdf") window.open(url, "_blank");
+    window.open(url, "_blank");
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", nomeFile(response.headers["x-filename"] as string | undefined));
@@ -46,10 +46,7 @@ const PulsantiFattura = ({ numero, confronto = true }: { numero: string; confron
           <i className="bi bi-arrow-left-right"></i>
         </Link>
       )}
-      <Button size="sm" variant="success" onClick={() => scarica("xlsx")} className="border border-0" title="excel">
-        <i className="bi bi-table"></i>
-      </Button>
-      <Button size="sm" variant="danger" onClick={() => scarica("pdf")} className="border border-0" title="pdf">
+      <Button size="sm" variant="danger" onClick={scaricaPdf} className="border border-0" title="pdf">
         <i className="bi bi-file-pdf-fill"></i>
       </Button>
     </div>

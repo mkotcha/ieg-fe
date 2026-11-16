@@ -10,6 +10,7 @@ import AvanzamentoLavoro from "./AvanzamentoLavoro";
 import { useLavoro } from "../hooks/useLavoro";
 import type { Cliente, EsitoFattura, Fattura, Fornitura, PagedResponse } from "../types";
 import VerificaLetture from "./VerificaLetture";
+import ZipFatture from "./ZipFatture";
 
 const HomePage = () => {
   const [clienti, setClienti] = useState<Cliente[] | null>(null);
@@ -151,6 +152,7 @@ const HomePage = () => {
                   "genera fatture"
                 )}
               </Button>
+              <ZipFatture mese={Number(mese)} anno={Number(anno)} />
             </div>
             {generazione.errore && (
               <Alert variant="danger" className="my-2 py-2">

@@ -50,6 +50,10 @@ export interface Lettura {
   id: number;
   fornitura: Fornitura;
   dataLettura: string;
+  /** false = conservata ma esclusa dai calcoli */
+  attiva: boolean;
+  /** inserita o corretta a mano (non arriva dai flussi del fornitore) */
+  manuale: boolean;
   tipoLettura?: TipoLettura;
   tipoContatore: TipoContatore;
   tipoDato: TipoDato;
@@ -170,6 +174,18 @@ export interface EsitoFattura {
   errore: string | null;
 }
 
+/** Parte dei pdf delle fatture di un mese, zippata sotto il limite degli allegati email. */
+export interface ParteZip {
+  /** numero della parte, da 1 */
+  parte: number;
+  totale: number;
+  /** numero di pdf nella parte */
+  fatture: number;
+  /** somma delle dimensioni dei pdf in byte (lo zip pesa circa altrettanto) */
+  dimensione: number;
+  nomeFile: string;
+}
+
 export type TipoOfferta = "PUN" | "FISSO" | "NEW";
 export type ModalitaProgrammazione = "OCV" | "CLASSIC";
 
@@ -203,6 +219,8 @@ export interface AltraPartita {
   importo: number;
   /** se true resta fuori dall'imponibile e si somma solo al totale da pagare */
   esenteIva: boolean;
+  /** false = esclusa dalle fatture ma conservata */
+  attiva: boolean;
   mese: number;
   anno: number;
 }

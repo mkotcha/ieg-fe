@@ -115,7 +115,7 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
       field: "numeroFattura",
       headerName: "Fattura",
       filter: true,
-      // il numero porta al confronto per fornitura, i pulsanti scaricano excel e pdf
+      // il numero porta al confronto per fornitura, il pulsante scarica il pdf
       cellRenderer: (p: { value: string }) => (
         <div className="d-flex">
           <Link to={`/fatture/${p.value}/confronto`} className="text-decoration-none text-reset">
