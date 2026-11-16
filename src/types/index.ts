@@ -174,6 +174,18 @@ export interface EsitoFattura {
   errore: string | null;
 }
 
+/** Parte dei pdf delle fatture di un mese, zippata sotto il limite degli allegati email. */
+export interface ParteZip {
+  /** numero della parte, da 1 */
+  parte: number;
+  totale: number;
+  /** numero di pdf nella parte */
+  fatture: number;
+  /** somma delle dimensioni dei pdf in byte (lo zip pesa circa altrettanto) */
+  dimensione: number;
+  nomeFile: string;
+}
+
 export type TipoOfferta = "PUN" | "FISSO" | "NEW";
 export type ModalitaProgrammazione = "OCV" | "CLASSIC";
 
