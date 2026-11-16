@@ -2,6 +2,7 @@ import { Col, Container, Nav, Navbar, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { unsetTokenAction } from "../redux/actions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import DumpDb from "./DumpDb";
 
 const TopBar = () => {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -53,9 +54,12 @@ const TopBar = () => {
               </div>
               <div className="ms-auto">
                 {isAuthenticated ? (
-                  <NavLink to={"/"} onClick={handleLogout} className="text-decoration-none text-white">
-                    Logout
-                  </NavLink>
+                  <>
+                    <DumpDb />
+                    <NavLink to={"/"} onClick={handleLogout} className="text-decoration-none text-white">
+                      Logout
+                    </NavLink>
+                  </>
                 ) : (
                   <NavLink to={"/login"} className="text-decoration-none text-white">
                     Login
