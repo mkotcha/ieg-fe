@@ -39,6 +39,13 @@ body {
   min-height: 36px !important;
 }
 
+// le righe sono larghe quanto il contenitore, a cui ag-grid dà la somma delle larghezze delle colonne: con colonne
+// più strette della tabella lo sfondo alternato (e il bordo) delle righe si interrompeva dopo l'ultima colonna.
+// Con min-width arrivano fino al bordo; con colonne più larghe vale la larghezza di ag-grid e resta lo scroll
+.ag-theme-quartz-dark .ag-center-cols-container {
+  min-width: 100%;
+}
+
 .ag-cell-focus, .ag-cell-no-focus {
   border: none !important;
 }
