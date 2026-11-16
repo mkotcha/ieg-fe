@@ -26,6 +26,7 @@ import {
   SHOW_ADD_OFFERTA_MODAL,
   HIDE_ADD_OFFERTA_MODAL,
   SHOW_NUOVA_OFFERTA_FORNITURA_MODAL,
+  SHOW_COPIA_OFFERTA_MODAL,
   SHOW_CAMBIA_OFFERTA_MODAL,
   HIDE_CAMBIA_OFFERTA_MODAL,
   SHOW_DELETE_OFFERTA_MODAL,
@@ -66,6 +67,8 @@ export interface ModalState {
   modOffertaId: number | null;
   /** pod a cui associare l'offerta appena creata */
   offertaPerPod: string | null;
+  /** offerta da cui copiare i valori della nuova offerta */
+  copiaOffertaId: number | null;
   /** fornitura di cui cambiare l'offerta */
   cambiaOffertaPod: string | null;
   showDeleteOffertaModal: boolean;
@@ -108,6 +111,7 @@ const initialState: ModalState = {
   showAddOffertaModal: false,
   modOffertaId: null,
   offertaPerPod: null,
+  copiaOffertaId: null,
   cambiaOffertaPod: null,
   showDeleteOffertaModal: false,
   deleteOffertaId: null,
@@ -276,6 +280,7 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddOffertaModal: true,
         modOffertaId: action.payload as number,
         offertaPerPod: null,
+        copiaOffertaId: null,
       };
     case SHOW_CAMBIA_OFFERTA_MODAL:
       return {
@@ -293,6 +298,15 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddOffertaModal: true,
         modOffertaId: null,
         offertaPerPod: action.payload as string,
+        copiaOffertaId: null,
+      };
+    case SHOW_COPIA_OFFERTA_MODAL:
+      return {
+        ...state,
+        showAddOffertaModal: true,
+        modOffertaId: null,
+        offertaPerPod: null,
+        copiaOffertaId: action.payload as number,
       };
     case HIDE_ADD_OFFERTA_MODAL:
       return {
@@ -300,6 +314,7 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         showAddOffertaModal: false,
         modOffertaId: null,
         offertaPerPod: null,
+        copiaOffertaId: null,
       };
     case SHOW_DELETE_OFFERTA_MODAL:
       return {

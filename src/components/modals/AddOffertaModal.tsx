@@ -11,7 +11,7 @@ const campiNumerici: CampiNumerici[] = ["f1", "f2", "f3", "maggiorazione", "spre
 
 /** Stato del form: numeri e date come stringhe dei campi input ("" = non valorizzato). */
 type FormOfferta = Record<"nome" | "codice" | "tipo" | "modalitaProgrammazione" | "descrizione" | "dataInizio" | "dataFine" | CampiNumerici, string> &
-  Record<"pun" | "capacitaMaggiorazione" | "hasSpread", boolean>;
+  Record<"pun" | "capacitaMaggiorazione" | "maggiorazioneSbilanciamento" | "hasSpread", boolean>;
 
 const offertaVuota: FormOfferta = {
   nome: "",
@@ -23,6 +23,7 @@ const offertaVuota: FormOfferta = {
   pun: true,
   capacitaMaggiorazione: false,
   maggiorazione: "",
+  maggiorazioneSbilanciamento: false,
   hasSpread: false,
   spread: "",
   ocv: "",
@@ -37,6 +38,10 @@ const AddOffertaModal = () => {
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
   const modOffertaId = useAppSelector(state => state.modal.modOffertaId);
   const offertaPerPod = useAppSelector(state => state.modal.offertaPerPod);
+  // nuova offerta che parte dai valori di un'altra: si legge quella, ma al salvataggio si crea
+  const copiaOffertaId = useAppSelector(state => state.modal.copiaOffertaId);
+  const offertaDaLeggere = modOffertaId ?? copiaOffertaId;
+  const [nomeOrigine, setNomeOrigine] = useState<string | null>(null);
   const token = useAppSelector(state => state.auth.token);
   const [offerta, setOfferta] = useState<FormOfferta>(offertaVuota);
   const [errore, setErrore] = useState<string | null>(null);
@@ -90,11 +95,12 @@ const AddOffertaModal = () => {
 
   useEffect(() => {
     const fetchOfferta = async () => {
-      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/offerte/${modOffertaId}`;
+      const url = `${import.meta.env.VITE_REACT_APP_API_URL}/offerte/${offertaDaLeggere}`;
       const response = await axios.get<Offerta>(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const o = response.data;
+      setNomeOrigine(o.nome);
       const form: FormOfferta = {
         ...offertaVuota,
         nome: o.nome ?? "",
@@ -102,6 +108,7 @@ const AddOffertaModal = () => {
         tipo: o.tipo ?? "PUN",
         pun: o.pun,
         capacitaMaggiorazione: o.capacitaMaggiorazione,
+        maggiorazioneSbilanciamento: o.maggiorazioneSbilanciamento,
         hasSpread: o.hasSpread,
         modalitaProgrammazione: o.modalitaProgrammazione ?? "OCV",
         descrizione: o.descrizione ?? "",
@@ -115,9 +122,9 @@ const AddOffertaModal = () => {
     };
 
     setErrore(null);
-    if (modOffertaId) fetchOfferta();
+    if (offertaDaLeggere) fetchOfferta();
     else setOfferta(offertaVuota);
-  }, [modOffertaId, showAddOffertaModal, token]);
+  }, [offertaDaLeggere, showAddOffertaModal, token]);
 
   const numero = (campo: CampiNumerici, label: string, step = "any") => (
     <Form.Group controlId={campo} className="mb-3">
@@ -133,7 +140,13 @@ const AddOffertaModal = () => {
       onHide={() => dispatch(hideAddOffertaModalAction())}
       aria-labelledby="add-offerta-modal-title">
       <Modal.Header closeButton>
-        <Modal.Title id="add-offerta-modal-title">{modOffertaId ? "Modifica offerta" : offertaPerPod ? `Nuova offerta per ${offertaPerPod}` : "Aggiungi offerta"}
+        <Modal.Title id="add-offerta-modal-title">{modOffertaId
+            ? "Modifica offerta"
+            : copiaOffertaId
+              ? `Nuova offerta da ${nomeOrigine ?? ""}`
+              : offertaPerPod
+                ? `Nuova offerta per ${offertaPerPod}`
+                : "Aggiungi offerta"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -189,6 +202,15 @@ const AddOffertaModal = () => {
               />
             </Col>
             <Col md={4}>{numero("maggiorazione", "Maggiorazione")}</Col>
+            <Col md={4} className="d-flex align-items-center">
+              <Form.Check
+                type="switch"
+                id="maggiorazioneSbilanciamento"
+                label="Maggiorazione sbilanciamento (+0,01 €/kWh)"
+                checked={offerta.maggiorazioneSbilanciamento}
+                onChange={handleCheck}
+              />
+            </Col>
           </Row>
           <Row>
             <Col md={4} className="d-flex align-items-center">

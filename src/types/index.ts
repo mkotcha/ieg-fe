@@ -200,6 +200,8 @@ export interface Offerta {
   pun: boolean;
   capacitaMaggiorazione: boolean;
   maggiorazione: number | null;
+  /** se true lo sbilanciamento del dispacciamento è aumentato di 0,01 €/kWh */
+  maggiorazioneSbilanciamento: boolean;
   hasSpread: boolean;
   spread: number | null;
   ocv: number | null;
@@ -287,6 +289,7 @@ export type VoceConfronto =
   | "COMMERCIALIZZAZIONE"
   | "DISPACCIAMENTO"
   | "MAGGIORAZIONE_CAPACITA"
+  | "MAGGIORAZIONE_SBILANCIAMENTO"
   | "QUOTE_FISSE_DISPACCIAMENTO"
   | "DISTRIBUZIONE"
   | "TRASMISSIONE"
