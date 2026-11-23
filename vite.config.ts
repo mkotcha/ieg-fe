@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 // Il browser chiama /api e /auth sullo stesso host del frontend; Vite inoltra al backend.
 // L'header Origin viene rimosso così Spring non applica il controllo CORS alle richieste proxate.
 const backend: ProxyOptions = {
-  target: "http://localhost:8080",
+  target: "http://localhost:8081",
   changeOrigin: true,
   configure: (proxy) => {
     proxy.on("proxyReq", (proxyReq) => proxyReq.removeHeader("origin"));
