@@ -9,7 +9,7 @@ import {
   showAddOffertaModalAction,
   showNuovaOffertaFornituraModalAction,
 } from "../redux/actions";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import type { Fattura, FatturaSingola, Fornitura as FornituraType, Lettura, Offerta } from "../types";
 import { erroreApi } from "../utils/erroreApi";
 import { formatEuro, formatNumero, NOMI_MESI } from "../utils/formato";
@@ -100,6 +100,7 @@ const Fornitura = () => {
   const [fatture, setFatture] = useState<FatturaFornitura[]>([]);
   const [letture, setLetture] = useState<Lettura[]>([]);
   const token = useAppSelector(state => state.auth.token);
+  const isAdmin = useIsAdmin();
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
   const showAddLetturaModal = useAppSelector(state => state.modal.showAddLetturaModal);
@@ -244,14 +245,16 @@ const Fornitura = () => {
             <Scheda
               titolo="Fornitura"
               azioni={
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  className="me-2"
-                  title="modifica fornitura"
-                  onClick={() => dispatch(showAddFornituraModalAction(fornitura.id))}>
-                  <i className="bi bi-pencil"></i>
-                </Button>
+                isAdmin && (
+                  <Button
+                    size="sm"
+                    variant="outline-secondary"
+                    className="me-2"
+                    title="modifica fornitura"
+                    onClick={() => dispatch(showAddFornituraModalAction(fornitura.id))}>
+                    <i className="bi bi-pencil"></i>
+                  </Button>
+                )
               }
               righe={[
                 ["POD", <span key="pod" className="font-monospace">{fornitura.id}</span>],
@@ -313,31 +316,33 @@ const Fornitura = () => {
                 )
               }
               azioni={
-                <div className="me-2 d-flex gap-1">
-                  {offerta && (
+                isAdmin && (
+                  <div className="me-2 d-flex gap-1">
+                    {offerta && (
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        title="modifica offerta (vale per tutte le forniture che la usano)"
+                        onClick={() => dispatch(showAddOffertaModalAction(offerta.id))}>
+                        <i className="bi bi-pencil"></i>
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       variant="outline-secondary"
-                      title="modifica offerta (vale per tutte le forniture che la usano)"
-                      onClick={() => dispatch(showAddOffertaModalAction(offerta.id))}>
-                      <i className="bi bi-pencil"></i>
+                      title="associa un'altra offerta esistente"
+                      onClick={apriCambioOfferta}>
+                      <i className="bi bi-arrow-left-right"></i>
                     </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    title="associa un'altra offerta esistente"
-                    onClick={apriCambioOfferta}>
-                    <i className="bi bi-arrow-left-right"></i>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    title="crea una nuova offerta e associala a questa fornitura"
-                    onClick={() => fornitura && dispatch(showNuovaOffertaFornituraModalAction(fornitura.id))}>
-                    <i className="bi bi-plus-lg"></i>
-                  </Button>
-                </div>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      title="crea una nuova offerta e associala a questa fornitura"
+                      onClick={() => fornitura && dispatch(showNuovaOffertaFornituraModalAction(fornitura.id))}>
+                      <i className="bi bi-plus-lg"></i>
+                    </Button>
+                  </div>
+                )
               }
               righe={
                 offerta

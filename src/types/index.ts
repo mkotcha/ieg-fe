@@ -478,3 +478,16 @@ export interface PodNonRegistrato {
   importoFornitore: number;
   bollette: string[];
 }
+
+export type Ruolo = "ADMIN" | "USER";
+
+/** Utente dell'applicazione: ADMIN può tutto, USER è in sola lettura. */
+export interface Utente {
+  id: number;
+  username: string;
+  nome: string | null;
+  cognome: string | null;
+  email: string;
+  ruolo: Ruolo;
+  createdAt: string;
+}

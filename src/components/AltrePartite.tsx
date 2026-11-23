@@ -5,12 +5,13 @@ import { Button, Container } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { showAddAltraPartitaModalAction } from "../redux/actions";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import AltraPartitaPod from "./cellComponents/AltraPartitaPod";
 import type { AltraPartita } from "../types";
 
 const AltrePartite = () => {
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const token = useAppSelector(state => state.auth.token);
   const navigate = useNavigate();
   const showAddAltraPartitaModal = useAppSelector(state => state.modal.showAddAltraPartitaModal);
@@ -23,9 +24,9 @@ const AltrePartite = () => {
       field: "attiva",
       headerName: "Attiva",
       headerTooltip: "le partite non attive restano in archivio ma non vanno in fattura",
-      // casella cliccabile: il cambio viene salvato subito (onCellValueChanged)
+      // casella cliccabile (solo ADMIN): il cambio viene salvato subito (onCellValueChanged)
       cellDataType: "boolean",
-      editable: true,
+      editable: p => (p.context as { isAdmin?: boolean } | undefined)?.isAdmin === true,
       filter: true,
     },
     { field: "fornitura.id", headerName: "POD", filter: true, cellRenderer: AltraPartitaPod },
@@ -89,9 +90,11 @@ const AltrePartite = () => {
         <div className="d-flex align-items-center">
           <h1>Altre partite</h1>
           <div className="ms-auto ">
-            <Button variant="primary" onClick={() => dispatch(showAddAltraPartitaModalAction())}>
-              Aggiungi partita
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddAltraPartitaModalAction())}>
+                Aggiungi partita
+              </Button>
+            )}
           </div>
         </div>
         <div className="ag-theme-quartz-dark flex-grow-1">
@@ -101,6 +104,7 @@ const AltrePartite = () => {
             rowData={rowData}
             columnDefs={colDefs}
             onCellValueChanged={cambiaAttiva}
+            context={{ isAdmin }}
             rowClassRules={{ "opacity-50": p => p.data?.attiva === false }}
             enableCellTextSelection={true}
             ensureDomOrder={true}

@@ -7,12 +7,13 @@ import { showAddClienteModalAction } from "../redux/actions";
 import ClienteTipo from "./cellComponents/ClienteTipo";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import type { Cliente, PagedResponse } from "../types";
 
 const Clienti = () => {
   const token = useAppSelector(state => state.auth.token);
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const showAddClienteModal = useAppSelector(state => state.modal.showAddClienteModal);
   const showDeleteClienteModal = useAppSelector(state => state.modal.showDeleteClienteModal);
@@ -65,9 +66,11 @@ const Clienti = () => {
         <div className="d-flex flex-column  h-100">
           <div className="d-flex align-items-center">
             <h1>Clienti</h1>
-            <Button variant="primary" onClick={() => dispatch(showAddClienteModalAction())} className=" ms-auto me-2">
-              Aggiungi cliente
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddClienteModalAction())} className=" ms-auto me-2">
+                Aggiungi cliente
+              </Button>
+            )}
           </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}

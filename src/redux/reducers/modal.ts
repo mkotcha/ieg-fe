@@ -35,6 +35,10 @@ import {
   HIDE_ADD_ALTRA_PARTITA_MODAL,
   SHOW_DELETE_ALTRA_PARTITA_MODAL,
   HIDE_DELETE_ALTRA_PARTITA_MODAL,
+  SHOW_ADD_UTENTE_MODAL,
+  HIDE_ADD_UTENTE_MODAL,
+  SHOW_DELETE_UTENTE_MODAL,
+  HIDE_DELETE_UTENTE_MODAL,
 } from "../actions";
 
 export interface ModalState {
@@ -77,6 +81,10 @@ export interface ModalState {
   modAltraPartitaId: number | null;
   showDeleteAltraPartitaModal: boolean;
   deleteAltraPartitaId: number | null;
+  showAddUtenteModal: boolean;
+  modUtenteId: number | null;
+  showDeleteUtenteModal: boolean;
+  deleteUtenteId: number | null;
 }
 
 interface ModalAction {
@@ -119,6 +127,10 @@ const initialState: ModalState = {
   modAltraPartitaId: null,
   showDeleteAltraPartitaModal: false,
   deleteAltraPartitaId: null,
+  showAddUtenteModal: false,
+  modUtenteId: null,
+  showDeleteUtenteModal: false,
+  deleteUtenteId: null,
 };
 
 const modalReducer = (state = initialState, action: ModalAction): ModalState => {
@@ -351,6 +363,30 @@ const modalReducer = (state = initialState, action: ModalAction): ModalState => 
         ...state,
         showDeleteAltraPartitaModal: false,
         deleteAltraPartitaId: null,
+      };
+    case SHOW_ADD_UTENTE_MODAL:
+      return {
+        ...state,
+        showAddUtenteModal: true,
+        modUtenteId: (action.payload as number) ?? null,
+      };
+    case HIDE_ADD_UTENTE_MODAL:
+      return {
+        ...state,
+        showAddUtenteModal: false,
+        modUtenteId: null,
+      };
+    case SHOW_DELETE_UTENTE_MODAL:
+      return {
+        ...state,
+        showDeleteUtenteModal: true,
+        deleteUtenteId: action.payload as number,
+      };
+    case HIDE_DELETE_UTENTE_MODAL:
+      return {
+        ...state,
+        showDeleteUtenteModal: false,
+        deleteUtenteId: null,
       };
 
     default:

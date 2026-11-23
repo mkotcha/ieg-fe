@@ -1,17 +1,18 @@
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { showAddLetturaModalAction, showDeleteLetturaModalAction } from "../../redux/actions";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../../redux/hooks";
 import type { Lettura } from "../../types";
 
 /**
- * Pulsanti di una lettura nelle celle delle tabelle: attiva/disattiva, modifica ed elimina.
+ * Pulsanti di una lettura nelle celle delle tabelle: attiva/disattiva, modifica ed elimina (solo ADMIN).
  * Dopo l'attivazione/disattivazione chiama ricarica (di solito passata nel context della tabella).
  */
 const PulsantiLettura = ({ lettura, ricarica }: { lettura: Lettura | undefined; ricarica?: () => void }) => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(state => state.auth.token);
   const attiva = lettura?.attiva !== false;
+  const isAdmin = useIsAdmin();
 
   // le letture disattivate restano in tabella ma non entrano nei calcoli
   const cambiaAttiva = async () => {
@@ -19,6 +20,9 @@ const PulsantiLettura = ({ lettura, ricarica }: { lettura: Lettura | undefined; 
     await axios.put(url, null, { headers: { Authorization: `Bearer ${token}` } });
     ricarica?.();
   };
+
+  // per chi è in sola lettura nessun pulsante
+  if (!isAdmin) return null;
 
   return (
     <>
