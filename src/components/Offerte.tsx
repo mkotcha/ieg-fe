@@ -5,7 +5,7 @@ import { Button, Container } from "react-bootstrap";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { showAddOffertaModalAction } from "../redux/actions";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import OffertaNome from "./cellComponents/OffertaNome";
 import type { Fornitura, Offerta, PagedResponse } from "../types";
 
@@ -15,6 +15,7 @@ const formatBool = (params: ValueFormatterParams<Offerta, boolean>) => (params.v
 
 const Offerte = () => {
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const token = useAppSelector(state => state.auth.token);
   const navigate = useNavigate();
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
@@ -137,9 +138,11 @@ const Offerte = () => {
         <div className="d-flex align-items-center">
           <h1>Offerte</h1>
           <div className="ms-auto ">
-            <Button variant="primary" onClick={() => dispatch(showAddOffertaModalAction())}>
-              Aggiungi offerta
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddOffertaModalAction())}>
+                Aggiungi offerta
+              </Button>
+            )}
           </div>
         </div>
         <div className="ag-theme-quartz-dark flex-grow-1">

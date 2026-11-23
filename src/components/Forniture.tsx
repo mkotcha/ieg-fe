@@ -9,7 +9,7 @@ import FornituraPod from "./cellComponents/FornituraPod";
 import FornituraOfferta from "./cellComponents/FornituraOfferta";
 import { formatEuro, formatNumero } from "../utils/formato";
 import { showAddFornituraModalAction } from "../redux/actions";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import type { Fornitura, PagedResponse } from "../types";
 
 const formatData = (d: string | null | undefined) => (d ? new Date(d).toLocaleDateString("it-IT") : "");
@@ -18,6 +18,7 @@ const Forniture = () => {
   const token = useAppSelector(state => state.auth.token);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const showDeleteFornituraModal = useAppSelector(state => state.modal.showDeleteFornituraModal);
   const showAddOffertaModal = useAppSelector(state => state.modal.showAddOffertaModal);
@@ -103,9 +104,11 @@ const Forniture = () => {
         <div className="d-flex flex-column  h-100">
           <div className="d-flex align-items-center">
             <h1>Forniture</h1>
-            <Button variant="primary" onClick={() => dispatch(showAddFornituraModalAction())} className=" ms-auto me-2">
-              Aggiungi Fornitura
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddFornituraModalAction())} className=" ms-auto me-2">
+                Aggiungi Fornitura
+              </Button>
+            )}
           </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
             {/* The AG Grid component */}

@@ -1,9 +1,11 @@
 import axios from "axios";
 import type { AppDispatch } from "../store";
+import type { Ruolo } from "../../types";
 
 export const SET_TOKEN = "SET_TOKEN";
 export const UNSET_TOKEN = "UNSET_TOKEN";
 export const SET_USER = "SET_USER";
+export const SET_RUOLO = "SET_RUOLO";
 export const SET_LOADING = "SET_LOADING";
 export const SET_ERROR = "SET_ERROR";
 export const SHOW_UPLOAD_MODAL = "SHOW_UPLOAD_MODAL";
@@ -42,9 +44,15 @@ export const SHOW_ADD_ALTRA_PARTITA_MODAL = "SHOW_ADD_ALTRA_PARTITA_MODAL";
 export const HIDE_ADD_ALTRA_PARTITA_MODAL = "HIDE_ADD_ALTRA_PARTITA_MODAL";
 export const SHOW_DELETE_ALTRA_PARTITA_MODAL = "SHOW_DELETE_ALTRA_PARTITA_MODAL";
 export const HIDE_DELETE_ALTRA_PARTITA_MODAL = "HIDE_DELETE_ALTRA_PARTITA_MODAL";
+export const SHOW_ADD_UTENTE_MODAL = "SHOW_ADD_UTENTE_MODAL";
+export const HIDE_ADD_UTENTE_MODAL = "HIDE_ADD_UTENTE_MODAL";
+export const SHOW_DELETE_UTENTE_MODAL = "SHOW_DELETE_UTENTE_MODAL";
+export const HIDE_DELETE_UTENTE_MODAL = "HIDE_DELETE_UTENTE_MODAL";
 
 export const setTokenAction = (token: string) => ({ type: SET_TOKEN, payload: token });
 export const unsetTokenAction = () => ({ type: UNSET_TOKEN });
+/** Ruolo dell'utente collegato (ADMIN o USER), dal login o da /utenti/me. */
+export const setRuoloAction = (ruolo: Ruolo | null) => ({ type: SET_RUOLO, payload: ruolo });
 export const showUploadModalAction = () => ({ type: SHOW_UPLOAD_MODAL });
 export const hideUploadModalAction = () => ({ type: HIDE_UPLOAD_MODAL });
 export const showAddLetturaModalAction = (id?: number) => ({ type: SHOW_ADD_LETTURA_MODAL, payload: id });
@@ -101,12 +109,17 @@ export const showAddAltraPartitaModalAction = (id?: number) => ({ type: SHOW_ADD
 export const hideAddAltraPartitaModalAction = () => ({ type: HIDE_ADD_ALTRA_PARTITA_MODAL });
 export const showDeleteAltraPartitaModalAction = (id?: number) => ({ type: SHOW_DELETE_ALTRA_PARTITA_MODAL, payload: id });
 export const hideDeleteAltraPartitaModalAction = () => ({ type: HIDE_DELETE_ALTRA_PARTITA_MODAL });
+export const showAddUtenteModalAction = (id?: number) => ({ type: SHOW_ADD_UTENTE_MODAL, payload: id });
+export const hideAddUtenteModalAction = () => ({ type: HIDE_ADD_UTENTE_MODAL });
+export const showDeleteUtenteModalAction = (id?: number) => ({ type: SHOW_DELETE_UTENTE_MODAL, payload: id });
+export const hideDeleteUtenteModalAction = () => ({ type: HIDE_DELETE_UTENTE_MODAL });
 
 export const loginAction = (username: string, password: string) => {
   return async (dispatch: AppDispatch) => {
     const url = `${import.meta.env.VITE_REACT_APP_URL}/auth/login`;
     const response = await axios.post(url, { username, password });
     const token = response.data.accessToken;
+    dispatch(setRuoloAction(response.data.ruolo ?? null));
     dispatch(setTokenAction(token));
   };
 };

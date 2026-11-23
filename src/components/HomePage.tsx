@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Alert, Button, Container, Form, Spinner, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/hooks";
+import { useAppSelector, useIsAdmin } from "../redux/hooks";
 import ConfrontoFornitore from "./ConfrontoFornitore";
 import AvanzamentoLavoro from "./AvanzamentoLavoro";
 import { useLavoro } from "../hooks/useLavoro";
@@ -25,6 +25,7 @@ const HomePage = () => {
     currentMonth === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear()
   );
   const token = useAppSelector(state => state.auth.token);
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -138,20 +139,22 @@ const HomePage = () => {
             </div>
             <div>
               totale fatture emesse nel periodo: {fattureDelPeriodo?.length} / {forniture ? clientiAttivi?.length : ""}
-              <Button
-                onClick={generaFatture}
-                size="sm"
-                variant="primary"
-                className="mx-2"
-                disabled={generazione.inCorso}>
-                {generazione.inCorso ? (
-                  <>
-                    <Spinner animation="border" size="sm" className="me-1" /> generazione in corso...
-                  </>
-                ) : (
-                  "genera fatture"
-                )}
-              </Button>
+              {isAdmin && (
+                <Button
+                  onClick={generaFatture}
+                  size="sm"
+                  variant="primary"
+                  className="mx-2"
+                  disabled={generazione.inCorso}>
+                  {generazione.inCorso ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-1" /> generazione in corso...
+                    </>
+                  ) : (
+                    "genera fatture"
+                  )}
+                </Button>
+              )}
               <ZipFatture mese={Number(mese)} anno={Number(anno)} />
             </div>
             {generazione.errore && (

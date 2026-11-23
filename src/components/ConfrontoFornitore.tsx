@@ -4,7 +4,7 @@ import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Form, Spinner, Table } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import { showNuovaFornituraDatiModalAction } from "../redux/actions";
 import type {
   ConfrontoFattura,
@@ -38,6 +38,7 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
   const [podNonRegistrati, setPodNonRegistrati] = useState<PodNonRegistrato[]>([]);
   const showAddFornituraModal = useAppSelector(state => state.modal.showAddFornituraModal);
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const [caricamento, setCaricamento] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
   const [upload, setUpload] = useState(false);
@@ -190,16 +191,20 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
         <h3 className="m-0 me-auto">
           Confronto con il fornitore - {nomeMese} {anno}
         </h3>
-        <Form.Control ref={fileRef} type="file" accept=".csv,.zip" size="sm" style={{ width: "auto" }} />
-        <Button size="sm" variant="primary" onClick={caricaFile} disabled={upload}>
-          {upload ? (
-            <>
-              <Spinner animation="border" size="sm" className="me-1" /> import in corso...
-            </>
-          ) : (
-            "importa fattura fornitore"
-          )}
-        </Button>
+        {isAdmin && (
+          <>
+            <Form.Control ref={fileRef} type="file" accept=".csv,.zip" size="sm" style={{ width: "auto" }} />
+            <Button size="sm" variant="primary" onClick={caricaFile} disabled={upload}>
+              {upload ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-1" /> import in corso...
+                </>
+              ) : (
+                "importa fattura fornitore"
+              )}
+            </Button>
+          </>
+        )}
       </div>
       <div className="p-2">
         {errore && (
@@ -299,7 +304,7 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                           ) : (
                             <>
                               no
-                              {nonRegistrato(p.pod) && (
+                              {isAdmin && nonRegistrato(p.pod) && (
                                 <Button
                                   size="sm"
                                   variant="outline-primary"
@@ -350,9 +355,11 @@ const ConfrontoFornitore = ({ mese, anno }: Props) => {
                     <td>{p.dataApertura ? new Date(p.dataApertura).toLocaleDateString("it-IT") : "-"}</td>
                     <td className="text-end">{formatEuro(p.importoFornitore)}</td>
                     <td>
-                      <Button size="sm" variant="outline-primary" className="py-0" onClick={() => registra(p)}>
-                        registra
-                      </Button>
+                      {isAdmin && (
+                        <Button size="sm" variant="outline-primary" className="py-0" onClick={() => registra(p)}>
+                          registra
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}

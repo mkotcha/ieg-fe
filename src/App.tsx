@@ -31,6 +31,9 @@ import CambiaOffertaModal from "./components/modals/CambiaOffertaModal";
 import DeleteOffertaModal from "./components/modals/DeleteOffertaModal";
 import AddAltraPartitaModal from "./components/modals/AddAltraPartitaModal";
 import DeleteAltraPartitaModal from "./components/modals/DeleteAltraPartitaModal";
+import Utenti from "./components/Utenti";
+import AddUtenteModal from "./components/modals/AddUtenteModal";
+import DeleteUtenteModal from "./components/modals/DeleteUtenteModal";
 
 function App() {
   return (
@@ -54,6 +57,7 @@ function App() {
         <Route path="/altre-partite" element={<AltrePartite />} />
         <Route path="/fatture" element={<Fatture />} />
         <Route path="/fatture/:numero/confronto" element={<ConfrontoFattura />} />
+        <Route path="/utenti" element={<Utenti />} />
       </Routes>
       <BottomBar />
       <UploadFlussiModal />
@@ -72,6 +76,8 @@ function App() {
       <DeleteOffertaModal />
       <AddAltraPartitaModal />
       <DeleteAltraPartitaModal />
+      <AddUtenteModal />
+      <DeleteUtenteModal />
     </BrowserRouter>
   );
 }

@@ -8,11 +8,12 @@ import axios from "axios";
 import OneriTipo from "./cellComponents/OneriTipo";
 import DispacciamentoMod from "./cellComponents/DispacciamentoMod";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import type { Dispacciamento, Oneri as OneriType } from "../types";
 
 const Oneri = () => {
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const token = useAppSelector(state => state.auth.token);
   const navigate = useNavigate();
   const showAddOneriModal = useAppSelector(state => state.modal.showAddOneriModal);
@@ -91,9 +92,11 @@ const Oneri = () => {
         <div className="d-flex align-items-center">
           <h1>Oneri</h1>
           <div className="ms-auto ">
-            <Button variant="primary" onClick={() => dispatch(showAddOneriModalAction())}>
-              Aggiungi oneri
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddOneriModalAction())}>
+                Aggiungi oneri
+              </Button>
+            )}
           </div>
         </div>
         <div className="ag-theme-quartz-dark flex-grow-1">
@@ -111,9 +114,11 @@ const Oneri = () => {
         <div className="d-flex align-items-center mt-1">
           <h1>Dispacciamento</h1>
           <div className="ms-auto ">
-            <Button variant="primary" onClick={() => dispatch(showAddDispacciamentoModalAction())} className="me-2">
-              Aggiungi dispacciamento
-            </Button>
+            {isAdmin && (
+              <Button variant="primary" onClick={() => dispatch(showAddDispacciamentoModalAction())} className="me-2">
+                Aggiungi dispacciamento
+              </Button>
+            )}
           </div>
         </div>
         <div className="ag-theme-quartz-dark flex-grow-1">

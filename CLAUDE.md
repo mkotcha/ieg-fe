@@ -41,6 +41,8 @@ Config is via Vite env vars, read as `import.meta.env.VITE_*` in code:
 
 **Auth**: no route guards/PrivateRoute wrapper. Each page component individually does `useEffect(() => { if (!token) navigate("/login") }, [token])`. The JWT is read from Redux (`state.auth.token`) and manually attached as `Authorization: Bearer <token>` on every axios call — there is no shared axios instance/interceptor, so every fetch/post site repeats the header boilerplate.
 
+**Roles**: `ADMIN` (everything) and `USER` (read-only; the backend rejects every non-GET with 403). `state.auth.ruolo` is set by the login response and refreshed by `TopBar` from `GET /api/utenti/me` on every start (a 401 there logs out). Use `useIsAdmin()` (`redux/hooks.ts`) to hide every button/editable cell that writes: add, edit, delete, toggles, uploads, invoice generation, DB dump. New write UI must be wrapped in `{isAdmin && ...}`. User management is the `/utenti` page (ADMIN; usual modal CRUD with `AddUtenteModal`/`DeleteUtenteModal`, where the password field in edit mode is an admin reset); everyone can change their own password from the user menu (`CambioPasswordModal`).
+
 **Modal-driven CRUD pattern**: this is the core repeated pattern across the app, followed consistently for every entity (Cliente, Fornitura, Lettura, Oneri, Dispacciamento):
 1. A list page (e.g. `Letture.jsx`) renders an `AgGridReact` grid and a "Aggiungi X" button that dispatches `showAddXModalAction()` (no id = create).
 2. A cell renderer component (`cellComponents/XPod.jsx` / `XTipo.jsx`) renders per-row edit/delete buttons that dispatch `showAddXModalAction(id)` / `showDeleteXModalAction(id)`.

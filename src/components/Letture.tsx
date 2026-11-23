@@ -8,7 +8,7 @@ import { showAddLetturaModalAction, showUploadModalAction } from "../redux/actio
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector, useIsAdmin } from "../redux/hooks";
 import type { Lettura, PagedResponse } from "../types";
 
 const formatNumeroIt = (params: ValueFormatterParams<Lettura, number>) =>
@@ -22,6 +22,7 @@ const Letture = () => {
   const showAddLetturaModal = useAppSelector(state => state.modal.showAddLetturaModal);
   const showDeleteLetturaModal = useAppSelector(state => state.modal.showDeleteLetturaModal);
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
   const [rowData, setRowData] = useState<Lettura[]>([]);
   const [localeIt] = useState({ thousandSeparator: ".", decimalSeparator: "," });
   const [colDefs] = useState<ColDef<Lettura>[]>([
@@ -164,12 +165,16 @@ const Letture = () => {
               <h1>Letture</h1>
             </div>
             <div className="ms-auto ">
-              <Button variant="primary" onClick={() => dispatch(showAddLetturaModalAction())} className="me-2">
-                Aggiungi lettura
-              </Button>
-              <Button variant="primary" onClick={() => dispatch(showUploadModalAction())}>
-                Carica flussi
-              </Button>
+              {isAdmin && (
+                <>
+                  <Button variant="primary" onClick={() => dispatch(showAddLetturaModalAction())} className="me-2">
+                    Aggiungi lettura
+                  </Button>
+                  <Button variant="primary" onClick={() => dispatch(showUploadModalAction())}>
+                    Carica flussi
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div className="ag-theme-quartz-dark flex-grow-1">
