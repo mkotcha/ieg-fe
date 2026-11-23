@@ -23,7 +23,7 @@ Note: there are two overlapping ESLint configs present — legacy `.eslintrc.cjs
 ## Environment
 
 Config is via Vite env vars, read as `import.meta.env.VITE_*` in code:
-- `VITE_REACT_APP_API_URL` — backend API base URL (e.g. `http://localhost:8080/api`)
+- `VITE_REACT_APP_API_URL` — backend API base URL (e.g. `/api`, proxied by Vite in dev to the dev backend on `http://localhost:8081`; prod backend is the `ieg-be` container on 8080 behind Caddy at `ieg.emmek.org`)
 - `VITE_REACT_APP_URL` — backend base URL used for auth (e.g. login posts to `${VITE_REACT_APP_URL}/auth/login`)
 - `VITE_REACT_APP_PERSIST_KEY` — secret key used to encrypt the redux-persist store (see below)
 
